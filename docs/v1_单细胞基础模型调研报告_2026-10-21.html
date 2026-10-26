@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>单细胞基础模型（scFM）发展调研报告 · 2026</title>
+<meta name="description" content="单细胞基础模型的起源、技术版图、产业生态、核心痛点与趋势展望（截至 2026 年 10 月）">
+<style>
+:root{
+  --ink:#14213d; --ink-2:#33415c; --muted:#667085; --line:#e4e7ec;
+  --bg:#f6f7f9; --card:#ffffff;
+  --teal:#0f766e; --teal-2:#14b8a6; --teal-bg:#ecfdf5;
+  --amber:#b45309; --amber-bg:#fffbeb;
+  --rose:#9f1239; --rose-bg:#fff1f2;
+  --blue:#1d4ed8; --blue-bg:#eff6ff;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.18);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:78px}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:16px; line-height:1.78; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+a{color:var(--teal); text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px; margin:0 auto; padding:0 26px}
+
+/* ---------- progress & nav ---------- */
+#progress{position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--teal-2),var(--teal)); z-index:100; transition:width .1s linear}
+nav.top{
+  position:sticky; top:0; z-index:90; backdrop-filter:saturate(180%) blur(12px);
+  background:rgba(255,255,255,.86); border-bottom:1px solid var(--line);
+}
+nav.top .inner{max-width:1120px; margin:0 auto; padding:10px 26px; display:flex; align-items:center; gap:18px}
+nav.top .brand{font-weight:800; letter-spacing:.02em; font-size:14px; color:var(--ink); white-space:nowrap}
+nav.top .brand span{color:var(--teal)}
+nav.top ul{display:flex; gap:2px; list-style:none; margin:0; padding:0; overflow-x:auto; scrollbar-width:none}
+nav.top ul::-webkit-scrollbar{display:none}
+nav.top a{display:block; padding:6px 10px; border-radius:8px; color:var(--ink-2); font-size:13.5px; white-space:nowrap}
+nav.top a:hover{background:#f1f5f9; text-decoration:none}
+nav.top a.active{background:var(--teal-bg); color:var(--teal); font-weight:700}
+
+/* ---------- cover ---------- */
+header.cover{
+  position:relative; overflow:hidden; color:#fff;
+  background:
+    radial-gradient(1100px 480px at 82% -8%, rgba(20,184,166,.30), transparent 62%),
+    radial-gradient(800px 420px at 6% 110%, rgba(59,130,246,.22), transparent 60%),
+    linear-gradient(135deg,#081726 0%,#0d2b3e 52%,#0f3a45 100%);
+}
+header.cover::after{
+  content:""; position:absolute; inset:0; opacity:.15; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);
+  background-size:46px 46px; mask-image:radial-gradient(ellipse at 60% 30%,#000 20%,transparent 72%);
+}
+.cover .inner{max-width:1120px; margin:0 auto; padding:74px 26px 58px; position:relative; z-index:2}
+.kicker{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:#99f6e4; border:1px solid rgba(153,246,228,.35); padding:6px 12px; border-radius:999px; background:rgba(15,118,110,.18)}
+.kicker i{width:6px; height:6px; border-radius:50%; background:#5eead4; box-shadow:0 0 0 4px rgba(94,234,212,.18)}
+h1.title{font-size:clamp(30px,4.4vw,50px); line-height:1.22; margin:20px 0 10px; font-weight:850; letter-spacing:-.015em}
+.subtitle{font-size:clamp(15px,1.7vw,19px); color:#c7d2dd; max-width:840px; margin:0 0 26px}
+.meta{display:flex; flex-wrap:wrap; gap:10px 22px; font-size:13.5px; color:#a9b8c7; margin-bottom:34px}
+.meta b{color:#e6eef5; font-weight:600}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px}
+.stat{background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 16px 14px}
+.stat .num{font-size:26px; font-weight:800; letter-spacing:-.02em; color:#fff; line-height:1.2}
+.stat .num small{font-size:14px; font-weight:600; color:#99f6e4; margin-left:2px}
+.stat .lab{font-size:12.5px; color:#a9b8c7; margin-top:4px; line-height:1.5}
+.note-top{font-size:12px; color:#8fa2b3; margin-top:22px; line-height:1.7}
+
+/* ---------- sections ---------- */
+main{padding:40px 0 20px}
+section{scroll-margin-top:80px; margin:0 0 54px}
+h2{font-size:clamp(23px,2.6vw,30px); line-height:1.3; margin:0 0 8px; font-weight:820; letter-spacing:-.01em; display:flex; align-items:baseline; gap:12px}
+h2 .no{font-size:14px; color:var(--teal); font-weight:800; letter-spacing:.08em; border:1px solid #cce9e5; background:var(--teal-bg); padding:3px 9px; border-radius:7px; transform:translateY(-3px)}
+.lede{color:var(--muted); font-size:15.5px; margin:0 0 22px; max-width:900px}
+h3{font-size:19px; margin:30px 0 10px; font-weight:760; letter-spacing:-.005em}
+h4{font-size:15.5px; margin:20px 0 8px; font-weight:720; color:var(--ink-2)}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px; padding-left:1.35em}
+li{margin:5px 0}
+strong{font-weight:720; color:#0b1b33}
+code{font-family:"JetBrains Mono",Consolas,monospace; font-size:.88em; background:#eef2f6; padding:1px 5px; border-radius:5px; color:#0f3d5c}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px 26px; box-shadow:var(--shadow)}
+.grid{display:grid; gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- callouts ---------- */
+.callout{border-radius:12px; padding:16px 18px 14px; margin:18px 0; border:1px solid; font-size:14.5px}
+.callout .t{font-weight:780; font-size:13.5px; letter-spacing:.03em; margin-bottom:6px; display:flex; align-items:center; gap:7px}
+.callout p:last-child{margin-bottom:0}
+.c-key{background:var(--teal-bg); border-color:#b7e4dd; color:#134e4a}
+.c-key .t{color:var(--teal)}
+.c-warn{background:var(--amber-bg); border-color:#fde68a; color:#78350f}
+.c-warn .t{color:var(--amber)}
+.c-risk{background:var(--rose-bg); border-color:#fecdd3; color:#7f1d3a}
+.c-risk .t{color:var(--rose)}
+.c-info{background:var(--blue-bg); border-color:#bfdbfe; color:#1e3a8a}
+.c-info .t{color:var(--blue)}
+
+/* ---------- refs ---------- */
+sup.ref{font-size:11px; line-height:0; margin-left:1px}
+sup.ref a{color:var(--teal); font-weight:700; padding:0 1px}
+sup.ref a:hover{background:var(--teal-bg)}
+
+/* ---------- timeline ---------- */
+.timeline{position:relative; margin:26px 0 8px; padding-left:30px}
+.timeline::before{content:""; position:absolute; left:8px; top:6px; bottom:6px; width:2px; background:linear-gradient(180deg,var(--teal-2),#dbe4ec)}
+.tl-item{position:relative; margin:0 0 22px}
+.tl-item::before{content:""; position:absolute; left:-27px; top:7px; width:10px; height:10px; border-radius:50%; background:#fff; border:2.5px solid var(--teal)}
+.tl-year{display:inline-block; font-size:12px; font-weight:800; letter-spacing:.06em; color:#fff; background:var(--teal); padding:1px 9px; border-radius:6px; margin-right:8px; transform:translateY(-1px)}
+.tl-item h4{display:inline; font-size:15.5px; margin:0}
+.tl-item .body{margin:6px 0 0; color:var(--ink-2); font-size:14.5px}
+.tl-item .tag{font-size:11.5px; color:var(--muted); border:1px solid var(--line); border-radius:5px; padding:0 6px; margin-left:6px; white-space:nowrap}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:#fff; margin:16px 0 8px; box-shadow:var(--shadow)}
+.table-wrap::-webkit-scrollbar{height:9px}
+.table-wrap::-webkit-scrollbar-track{background:#f1f5f9; border-radius:8px}
+.table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1; border-radius:8px}
+.table-wrap::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+table{border-collapse:collapse; width:100%; font-size:13px; min-width:760px}
+thead th{position:sticky; top:0; background:#f1f5f9; color:#0f2a43; text-align:left; font-weight:760; padding:11px 12px; border-bottom:1px solid var(--line); white-space:nowrap; z-index:2}
+tbody td{padding:10px 12px; border-bottom:1px solid #eef1f5; vertical-align:top; color:var(--ink-2)}
+tbody tr:nth-child(even){background:#fafbfc}
+tbody tr:hover{background:#f0fdfa}
+td.name{font-weight:720; color:var(--ink); white-space:nowrap}
+td .mini{display:block; font-size:11.5px; color:var(--muted); font-weight:400; margin-top:2px}
+.pill{display:inline-block; font-size:11px; padding:1px 7px; border-radius:999px; border:1px solid; white-space:nowrap}
+.p-open{background:#ecfdf5; color:#047857; border-color:#a7f3d0}
+.p-part{background:#fffbeb; color:#b45309; border-color:#fde68a}
+.p-closed{background:#fff1f2; color:#9f1239; border-color:#fecdd3}
+.p-na{background:#f1f5f9; color:#475569; border-color:#e2e8f0}
+
+/* ---------- chart ---------- */
+.chart{background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px 22px; box-shadow:var(--shadow)}
+.chart h4{margin:0 0 4px}
+.chart .sub{font-size:12.5px; color:var(--muted); margin:0 0 16px}
+.bar-row{display:grid; grid-template-columns:120px 1fr 82px; align-items:center; gap:10px; margin:7px 0; font-size:13px}
+.bar-row .nm{color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.bar-row .track{background:#eef2f6; border-radius:6px; height:16px; overflow:hidden}
+.bar-row .fill{height:100%; border-radius:6px; background:linear-gradient(90deg,#2dd4bf,#0f766e)}
+.bar-row .val{text-align:right; font-variant-numeric:tabular-nums; color:var(--ink); font-weight:650; font-size:12.5px}
+.bar-row.hl .fill{background:linear-gradient(90deg,#fbbf24,#b45309)}
+@media(max-width:560px){.bar-row{grid-template-columns:92px 1fr 66px; font-size:12px}}
+
+/* ---------- matrix ---------- */
+.matrix{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:18px 0}
+.mx{border:1px solid var(--line); border-radius:12px; padding:14px 15px; background:#fff}
+.mx .h{font-size:12.5px; font-weight:800; letter-spacing:.03em; color:var(--teal); margin-bottom:6px}
+.mx .b{font-size:13.5px; color:var(--ink-2); line-height:1.65}
+.mx .b b{color:var(--ink)}
+@media(max-width:760px){.matrix{grid-template-columns:1fr}}
+
+/* ---------- cards for models ---------- */
+.mcard{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 17px; box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.mcard .top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px}
+.mcard .nm{font-weight:800; font-size:15.5px; letter-spacing:-.005em}
+.mcard .yr{font-size:11.5px; color:var(--muted); white-space:nowrap; padding-top:2px}
+.mcard .org{font-size:12px; color:var(--teal); font-weight:600; margin-bottom:7px}
+.mcard .desc{font-size:13px; color:var(--ink-2); line-height:1.68}
+.mcard .spec{margin-top:9px; display:flex; flex-wrap:wrap; gap:5px}
+.mcard .spec span{font-size:11.5px; background:#f1f5f9; color:#334155; padding:2px 7px; border-radius:5px}
+
+/* ---------- misc ---------- */
+.quote{border-left:3px solid var(--teal-2); background:#f8fafc; padding:12px 16px; margin:16px 0; color:var(--ink-2); font-size:14.5px}
+.quote b{color:var(--ink)}
+.small{font-size:13px; color:var(--muted)}
+.only-mobile{display:none}
+@media(max-width:680px){.only-mobile{display:inline}}
+hr.sep{border:0; border-top:1px solid var(--line); margin:34px 0}
+.toc{display:grid; grid-template-columns:repeat(2,1fr); gap:10px 18px; margin-top:8px}
+.toc a{display:flex; gap:10px; align-items:baseline; padding:8px 10px; border-radius:9px; color:var(--ink-2); font-size:14px; border:1px solid transparent}
+.toc a:hover{background:#fff; border-color:var(--line); text-decoration:none}
+.toc a b{color:var(--teal); font-size:12px; font-variant-numeric:tabular-nums}
+@media(max-width:680px){.toc{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--line); background:#fff; margin-top:20px}
+footer .inner{max-width:1120px; margin:0 auto; padding:28px 26px 40px; color:var(--muted); font-size:12.5px; line-height:1.8}
+
+/* references */
+ol.refs{padding-left:1.6em; font-size:12.8px; color:var(--ink-2); line-height:1.72}
+ol.refs li{margin:7px 0}
+ol.refs li:target{background:#fef9c3; border-radius:4px}
+ol.refs .u{color:var(--muted); word-break:break-all; font-size:11.8px}
+
+@media print{
+  nav.top,#progress{display:none}
+  header.cover{background:#0b1f33 !important; -webkit-print-color-adjust:exact}
+  body{background:#fff; font-size:10.5pt}
+  .card,.table-wrap,.chart{box-shadow:none}
+  section{page-break-inside:auto}
+  h2{page-break-after:avoid}
+  .table-wrap{overflow:visible; border:1px solid #d9dee5}
+  table{min-width:0; width:100%; font-size:8pt}
+  thead th,tbody td{padding:5px 5px; line-height:1.45}
+  td.name{white-space:normal}
+  td .mini{font-size:7pt}
+  .pill{font-size:7pt; padding:0 4px}
+  .mcard .desc,.card p,.callout{font-size:9.5pt}
+  .grid.g3,.grid.g4{grid-template-columns:repeat(2,1fr)}
+  .bar-row{font-size:9pt}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="top">
+  <div class="inner">
+    <div class="brand">scFM<span>·</span>调研</div>
+    <ul>
+      <li><a href="#s0">摘要</a></li>
+      <li><a href="#s1">定义</a></li>
+      <li><a href="#s2">起源</a></li>
+      <li><a href="#s3">技术版图</a></li>
+      <li><a href="#s4">模型全景</a></li>
+      <li><a href="#s5">重点方向</a></li>
+      <li><a href="#s6">产业生态</a></li>
+      <li><a href="#s7">痛点</a></li>
+      <li><a href="#s8">争议</a></li>
+      <li><a href="#s9">展望</a></li>
+      <li><a href="#s10">建议</a></li>
+      <li><a href="#appendix">附录</a></li>
+      <li><a href="#refs">参考</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="cover">
+  <div class="inner">
+    <div class="kicker"><i></i> Research Report · 2026 Q4</div>
+    <h1 class="title">单细胞基础模型（scFM）发展调研报告</h1>
+    <p class="subtitle">从「细胞语言模型」到「虚拟细胞世界模型」：起源、技术版图、产业生态与核心痛点<br>基于 2018–2026 年 10 月的论文、开源仓库、机构与公司公告的一手资料梳理</p>
+    <div class="meta">
+      <div>版本 <b>v1.0</b></div>
+      <div>完成时间 <b>2026-10-21</b></div>
+      <div>覆盖范围 <b>学术 · 开源 · 产业 · 监管</b></div>
+      <div>引用 <b>40+ 一手来源</b></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">390M<small> 细胞</small></div><div class="lab">公开报道中最大单细胞预训练语料（CellOS，厂商口径）</div></div>
+      <div class="stat"><div class="num">12B<small> 参数</small></div><div class="lab">公开报道中的参数天花板（CellOS，MoE，厂商口径）</div></div>
+      <div class="stat"><div class="num">1%–10%</div><div class="lab">预训练数据即达性能平台期（Nat Methods 2026）</div></div>
+      <div class="stat"><div class="num">4.2%</div><div class="lab">扰动数据中可检出真实基因交互的比例</div></div>
+    </div>
+    <p class="note-top">说明：本报告区分「论文/官方数据」与「厂商宣称」。凡属后者，均在正文标注；未标注者默认可在参考文献中找到一手出处。报告不构成投资建议。</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ 摘要 ============ -->
+<section id="s0">
+  <h2><span class="no">00</span>执行摘要：十个判断</h2>
+  <p class="lede">如果用一句话概括：单细胞基础模型已经完成了「从 0 到 1」的范式验证，但尚未完成「从 1 到 10」的价值验证。它现在最大的问题不是模型不够大，而是<strong>评测、数据与落地闭环</strong>没有跟上。</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h4>1. 起源是两条曲线的交汇</h4>
+      <p>一条是单细胞测序通量的指数增长（2009 年首篇 scRNA-seq，2015 年 Drop-seq/10x，2016 年人类细胞图谱启动）；另一条是 NLP 预训练范式的成熟（2018 年 BERT/GPT）。2018–2019 年的 scVI/scANVI 代表「统计生成」路线，2021 年的 scBERT 首次把 BERT 的「掩码—微调」范式搬到转录组，2022–2023 年的 tGPT/scGPT 则把 GPT 的自回归范式引入。<sup class="ref"><a href="#r1">[1]</a><a href="#r5">[5]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>2. 2023–2025 是「规模竞赛」</h4>
+      <p>训练语料从 3,000 万（Geneformer）→ 5,000 万（scFoundation）→ 1 亿（CellFM）→ 1.12 亿（TranscriptFormer）→ 2.7 亿（State）→ 3.9 亿（CellOS，厂商口径）；参数量从 1,000 万 → 1 亿 → 8 亿 → 12B。但规模与能力并不线性相关。<sup class="ref"><a href="#r2">[2]</a><a href="#r4">[4]</a><a href="#r6">[6]</a><a href="#r10">[10]</a><a href="#r11">[11]</a><a href="#r28">[28]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>3. 2025–2026 出现「能力转向」</h4>
+      <p>研究重心从「细胞注释/嵌入」转向「扰动预测/虚拟细胞/世界模型」。标志性事件：Arc 的 State（2025-06）、Cell 的 AIVC 宣言（2024-12）、Arc 虚拟细胞挑战赛（2025）、CZI TranscriptFormer（2025）、以及 2026 年一批 diffusion/JEPA/flow-matching 模型。<sup class="ref"><a href="#r11">[11]</a><a href="#r14">[14]</a><a href="#r12">[12]</a><a href="#r10">[10]</a><a href="#r27">[27]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>4. 评测危机是当前最大痛点</h4>
+      <p>多项独立评测得出相似结论：zero-shot 的 scFM 往往不如 HVG、Harmony、逻辑回归等简单基线；不同评测之间排名不稳定；预训练/测试集重叠造成数据泄漏；指标（MSE/Pearson）与生物学相关性脱节。<sup class="ref"><a href="#r16">[16]</a><a href="#r17">[17]</a><a href="#r18">[18]</a><a href="#r19">[19]</a><a href="#r21">[21]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>5. 数据比模型更硬</h4>
+      <p>高质量<strong>扰动数据</strong>稀缺、批次效应与稀疏/丢零普遍、双细胞与环境 RNA 污染、公开数据重复计数、许可碎片化（Apache-2.0 / GPL / CC BY-NC-ND / 无 LICENSE 并存），共同构成比「参数量」更难的瓶颈。<sup class="ref"><a href="#r1">[1]</a><a href="#r13">[13]</a><a href="#r15">[15]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>6. 架构共识尚未形成</h4>
+      <p>BERT 式编码器、GPT 式解码器、encoder-decoder、RetNet、Mamba+Transformer、离散扩散、JEPA、flow matching 并存。基因没有自然顺序、细胞被当作独立样本、固定基因词表——这三个「原罪」仍未被普遍解决。<sup class="ref"><a href="#r1">[1]</a><a href="#r6">[6]</a><a href="#r27">[27]</a><a href="#r29">[29]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>7. 产业「两头热、中间冷」</h4>
+      <p>研究机构（Arc、CZI、Broad、Gladstone）、算力厂商（NVIDIA）与早期创业公司（Xaira、Tahoe、Noetik）很热；但真正把 scFM 嵌入药物研发决策链、形成「模型—湿实验—数据」闭环的案例仍然很少。<sup class="ref"><a href="#r12">[12]</a><a href="#r13">[13]</a><a href="#r28">[28]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>8. 中国形成「一超多强」格局</h4>
+      <p>清华张学工一系（scFoundation / scMulan / xTrimoGene）是学术源头；中山大学—华为—新格元（CellFM，8 亿参数/1 亿细胞）、阿里达摩院（Lingshu-Cell）、之江实验室—华大（scDifformer）、同济（AlphaCell）、中科院（GeneCompass）构成多点突破；腾讯 scBERT 是最早的 BERT 路线但已停更。<sup class="ref"><a href="#r5">[5]</a><a href="#r6">[6]</a><a href="#r7">[7]</a><a href="#r27">[27]</a><a href="#r30">[30]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>9. 「基础模型」之名尚未坐实</h4>
+      <p>更准确的说法是「大规模预训练表征模型」：它在微调、特征提取、域内/近域任务上确有价值；但 zero-shot 通用性、跨数据集稳健性、稀有细胞可靠性都还没有被严格证明。<sup class="ref"><a href="#r16">[16]</a><a href="#r19">[19]</a><a href="#r22">[22]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>10. 下一个分水岭是「数据闭环」</h4>
+      <p>谁能持续产生高质量扰动数据、并把湿实验验证接回训练回路，谁就有机会重新点燃 scaling law。纯靠爬取公开 atlas 的路线，已经接近天花板。<sup class="ref"><a href="#r11">[11]</a><a href="#r13">[13]</a><a href="#r15">[15]</a></sup></p>
+    </div>
+  </div>
+
+  <div class="callout c-key">
+    <div class="t">◆ 阅读指引</div>
+    <p>第 1–2 章回答「它是什么、从哪来」；第 3–4 章给出技术分类与 20 个代表模型的全景表；第 5–6 章梳理 2024–2026 的五个重点方向与产业生态；第 7–8 章是报告的核心——把「痛点」拆成可验证的九类问题，并呈现正反双方证据；第 9–10 章给出趋势判断与选型建议。</p>
+  </div>
+</section>
+
+<!-- ============ 1 定义 ============ -->
+<section id="s1">
+  <h2><span class="no">01</span>什么是单细胞基础模型</h2>
+  <p class="lede">单细胞基础模型（single-cell foundation model, scFM）是指：在千万到亿级单细胞组学数据上，以自监督方式预训练、可迁移到多种下游任务的深度神经网络。它的核心隐喻是「细胞即句子，基因即词」。</p>
+
+  <h3>1.1 一个四段式范式</h3>
+  <div class="matrix">
+    <div class="mx"><div class="h">①  tokenization</div><div class="b">把每个细胞的稀疏表达向量变成 token 序列：<b>基因排名</b>（Geneformer）、<b>表达值分箱</b>（scBERT）、<b>连续值投影</b>（scFoundation）、<b>基因名文本</b>（Cell2Sentence / GenePT）、<b>表达感知注意力</b>（TranscriptFormer）。</div></div>
+    <div class="mx"><div class="h">②  pretraining</div><div class="b">自监督目标：<b>掩码基因预测</b>（BERT 式）、<b>自回归下一基因</b>（GPT 式）、<b>对比学习</b>、<b>去噪/重建</b>、<b>多任务</b>（表达值+元数据+扰动）。</div></div>
+    <div class="mx"><div class="h">③  adaptation</div><div class="b">全量微调、<b>LoRA</b>、冻结主干+线性探针、持续预训练、上下文学习/提示。算力从单卡到多机不等。</div></div>
+    <div class="mx"><div class="h">④  deployment</div><div class="b">三类输出：<b>细胞嵌入</b>（聚类/注释/检索）、<b>基因嵌入与注意力</b>（GRN/基因功能）、<b>生成谱</b>（扰动/药物响应/虚拟细胞）。</div></div>
+    <div class="mx"><div class="h">⑤  下游任务</div><div class="b">细胞类型注释、批次整合、多模态整合、缺失表达补全、基因功能预测、GRN 推断、扰动预测、空间反卷积、虚拟细胞模拟。</div></div>
+    <div class="mx"><div class="h">⑥  评价</div><div class="b">零样本 / 微调 / 少样本；准确性、生物学保守性、批次去除、效率、稳定性、可解释性——目前尚无统一标准。</div></div>
+  </div>
+
+  <h3>1.2 它与「专用工具」的区别</h3>
+  <p>传统工具（Seurat、Scanpy、Harmony、scVI、CellTypist）是<strong>任务专用</strong>的：每个任务一个模型、一个假设。scFM 的承诺是<strong>一个主干、多种任务</strong>：预训练学到「基因共表达语法」，再通过微调或提示迁移到新任务。这个承诺在 2023–2024 年被广泛接受，但在 2025–2026 年受到系统性质疑（见第 7–8 章）。</p>
+
+  <div class="callout c-info">
+    <div class="t">ℹ 概念辨析</div>
+    <p><strong>基础模型 ≠ 大语言模型。</strong>多数 scFM 只是借用了 Transformer 架构与自监督目标，并不具备自然语言模型的指令遵循、推理与对话能力。2025 年后出现的 CellWhisperer、CellHermes 等「细胞语言模型」才尝试把转录组翻译成文本、再用 LLM 做推理，但这类路线目前仍是少数。<sup class="ref"><a href="#r26">[26]</a><a href="#r29">[29]</a></sup></p>
+  </div>
+</section>
+
+<!-- ============ 2 起源 ============ -->
+<section id="s2">
+  <h2><span class="no">02</span>起源与演进：一条时间线</h2>
+  <p class="lede">单细胞基础模型不是某一天突然出现的。它经历了「统计生成 → 语言模型迁移 → 规模竞赛 → 虚拟细胞」四个阶段，每个阶段都对应一次对「细胞数据像什么」的重新理解。</p>
+
+  <h3>2.1 前史：数据爆炸与统计生成模型（2009–2020）</h3>
+  <p>2009 年 Tang 等发表首篇单细胞转录组测序；2015 年 Drop-seq 与 inDrop 把通量提高两个数量级；2016 年 10x Genomics 商业化、人类细胞图谱（HCA）启动。<sup class="ref"><a href="#r34">[34]</a></sup> 数据从「几百个细胞」变成「百万级细胞」，传统聚类与差异表达方法开始失效。</p>
+  <p>2018 年，Lopez 等提出 <strong>scVI</strong>——用变分自编码器（VAE）对 scRNA-seq 计数建模，第一次把「深度生成模型」用于单细胞。2019 年的 <strong>scANVI</strong> 加入标签信息，<strong>scGen</strong> 尝试用隐空间向量算术预测扰动响应。这一路线今天仍是最强的基线之一：2025 年的零样本评测显示，scGPT 的中位 ASW（0.53）与 scVI（0.54）几乎持平。<sup class="ref"><a href="#r17">[17]</a></sup></p>
+
+  <h3>2.2 语言模型的迁移（2018–2023）</h3>
+  <p>「基础模型（foundation model）」一词在 2021 年由 Stanford CRFM 系统化定义为「在大规模数据上预训练、可适配广泛下游任务」的模型。<sup class="ref"><a href="#r47">[47]</a></sup> 在此之前，2018 年 BERT 与 GPT 的相继发布，已经把「预训练—微调」变成 NLP 的标准流程。研究者很快意识到：细胞的基因表达向量与句子的词向量在结构上有相似性——都是高维、稀疏、有上下文依赖的序列。于是出现了三条迁移路径：</p>
+  <ul>
+    <li><strong>BERT 式（掩码预测）</strong>：2021 年 12 月，腾讯 AI Lab 的 <strong>scBERT</strong> 预印本发布，用 Performer 架构在 PanglaoDB（约 110 万细胞、209 个数据集）上做掩码基因预测，再微调到细胞注释。这是第一个明确以「单细胞 BERT」为名的模型。<sup class="ref"><a href="#r5">[5]</a></sup></li>
+    <li><strong>GPT 式（自回归）</strong>：2022 年的 <strong>tGPT</strong> 把「细胞」当作 token、把「细胞序列」当作句子，用 2,200 万细胞训练；2023 年的 <strong>scGPT</strong> 则把基因当 token、用掩码自注意力做生成式预训练，训练语料 3,300 万细胞。<sup class="ref"><a href="#r3">[3]</a></sup></li>
+    <li><strong>排名式（rank tokenization）</strong>：2022 年预印本、2023 年发表于 Nature 的 <strong>Geneformer</strong>，按表达量把每个细胞的基因排序、取前 2,048 个基因作为序列，用 6 层 BERT 在 Genecorpus-30M（约 3,000 万细胞）上预训练。它的重要性在于证明了「迁移学习」在数据稀缺的网络生物学任务上有效。<sup class="ref"><a href="#r2">[2]</a></sup></li>
+  </ul>
+
+  <div class="callout c-key">
+    <div class="t">◆ 为什么是 2021–2023</div>
+    <p>三个条件同时成熟：① 公开单细胞数据达到千万级（CELLxGENE、HCA、GEO）；② Transformer 与自监督训练 recipe 开源；③ GPU 算力可负担（数天到数周、4–12 张 A100/H100 即可训练数千万到一亿参数的模型）。<sup class="ref"><a href="#r1">[1]</a></sup></p>
+  </div>
+
+  <h3>2.3 规模竞赛（2023–2025）</h3>
+  <p>2023 年之后，论文的主线变成「更大的数据 + 更大的参数」：</p>
+  <ul>
+    <li><strong>scFoundation</strong>（2024，Nature Methods）：5,000 万人类细胞、1 亿参数、19,264 个基因，非对称 encoder-decoder，报告了参数/FLOPs 与重建 loss 的幂律关系。<sup class="ref"><a href="#r4">[4]</a></sup></li>
+    <li><strong>GeneCompass</strong>（2024，Cell Research）：1.2 亿人+鼠细胞（质控后 1.0177 亿），12 层/12 头/768 维、约 1 亿参数，注入启动子、基因共表达、TF 调控等四类先验知识。<sup class="ref"><a href="#r7">[7]</a></sup></li>
+    <li><strong>UCE</strong>（2023 预印本，2026 Nature）：3,600 万细胞、8 个物种、33 层/6.5 亿参数，主打「零样本通用嵌入」，可嵌入训练时未见的物种。<sup class="ref"><a href="#r8">[8]</a></sup></li>
+    <li><strong>CellFM</strong>（2025，Nature Communications）：1 亿人类细胞、8 亿参数，基于 RetNet，在华为 MindSpore + 32 张昇腾 910 上训练。<sup class="ref"><a href="#r6">[6]</a></sup></li>
+    <li><strong>TranscriptFormer</strong>（2025，CZI）：1.12 亿细胞、12 个物种、跨度 15.3 亿年进化，368–542 M 参数，MIT 许可。<sup class="ref"><a href="#r10">[10]</a></sup></li>
+    <li><strong>State</strong>（2025，Arc Institute）：约 1.7 亿观测细胞 + 1 亿扰动细胞，SE+ST 双模块，主打扰动响应预测。<sup class="ref"><a href="#r11">[11]</a></sup></li>
+  </ul>
+
+  <h3>2.4 虚拟细胞转向（2024–2026）</h3>
+  <p>2024 年 12 月，Stanford、Genentech 与 CZI 在 <em>Cell</em> 发表《How to build the virtual cell with artificial intelligence》，正式提出「AI 虚拟细胞（AIVC）」的路线图：通用表征、跨物种、可预测动力学、可在计算机上做实验。<sup class="ref"><a href="#r14">[14]</a></sup> 此后，领域的关键词从「annotation」变成「perturbation」「virtual cell」「world model」。</p>
+
+  <div class="timeline">
+    <div class="tl-item"><span class="tl-year">2009</span><h4>首篇单细胞转录组测序</h4><p class="body">Tang 等，单细胞进入组学时代。</p></div>
+    <div class="tl-item"><span class="tl-year">2015–2016</span><h4>通量革命与数据基础设施</h4><p class="body">Drop-seq / inDrop / 10x Genomics；人类细胞图谱（HCA）启动。<span class="tag">数据层</span></p></div>
+    <div class="tl-item"><span class="tl-year">2018</span><h4>scVI：深度生成模型进入单细胞</h4><p class="body">VAE 对计数建模，成为此后所有评测的「强基线」。<span class="tag">统计生成</span></p></div>
+    <div class="tl-item"><span class="tl-year">2021.12</span><h4>scBERT：第一个「单细胞 BERT」</h4><p class="body">腾讯 AI Lab，PanglaoDB 约 110 万细胞，Performer + 掩码基因预测。<span class="tag">语言模型迁移</span></p></div>
+    <div class="tl-item"><span class="tl-year">2022</span><h4>tGPT 与 Geneformer 预印本</h4><p class="body">tGPT 把细胞当 token；Geneformer 用排名序列 + BERT，证明迁移学习在网络生物学有效。<span class="tag">两条路线</span></p></div>
+    <div class="tl-item"><span class="tl-year">2023</span><h4>Geneformer 登上 Nature；scGPT 预印本</h4><p class="body">「细胞语言模型」成为显学；CELLxGENE 等公开语料快速扩张。<span class="tag">范式确立</span></p></div>
+    <div class="tl-item"><span class="tl-year">2024</span><h4>scFoundation / GeneCompass / scGPT 正式发表</h4><p class="body">数据规模进入 5,000 万–1.2 亿；参数进入 1 亿级；多模态与跨物种出现。<span class="tag">规模竞赛</span></p></div>
+    <div class="tl-item"><span class="tl-year">2024.12</span><h4>Cell：AI 虚拟细胞宣言</h4><p class="body">Stanford + Genentech + CZI 提出 AIVC 三阶段目标与全球协作倡议。<span class="tag">范式转向</span></p></div>
+    <div class="tl-item"><span class="tl-year">2025.02</span><h4>Tahoe-100M 开源</h4><p class="body">1 亿细胞、6 万药物—细胞相互作用、50 个癌细胞系 × 1,200 种药物；Arc 虚拟细胞图谱首发的 3 亿细胞之一。<span class="tag">扰动数据</span></p></div>
+    <div class="tl-item"><span class="tl-year">2025.05</span><h4>CellFM：8 亿参数、1 亿细胞</h4><p class="body">中山大学 + 华为 + 新格元，MindSpore/昇腾，国产算力路线。<span class="tag">中国</span></p></div>
+    <div class="tl-item"><span class="tl-year">2025.06</span><h4>State：Arc 的首个虚拟细胞模型</h4><p class="body">1.7 亿观测 + 1 亿扰动细胞；Tahoe-100M 上扰动区分度提升（博客 50%，论文摘要 30%+）、DEG 准确率翻倍；2026-08 正式发表于 <em>Cell</em>。<span class="tag">虚拟细胞</span></p></div>
+    <div class="tl-item"><span class="tl-year">2025.12</span><h4>首届 Virtual Cell Challenge 收官</h4><p class="body">5,000+ 注册、1,200+ 队伍、300+ 最终提交；结论：扰动预测模型「尚未在所有指标上稳定超过朴素基线」。<span class="tag">评测</span></p></div>
+    <div class="tl-item"><span class="tl-year">2026.06</span><h4>Nature Methods：数据规模出现平台期</h4><p class="body">2,220 万细胞、400 个模型、6,400 次实验；性能在 1%–10% 数据即饱和，单细胞领域「没有清晰的数据 scaling law」。<span class="tag">反思</span></p></div>
+    <div class="tl-item"><span class="tl-year">2026.07–09</span><h4>世界模型与扩散模型登场</h4><p class="body">阿里达摩院 Lingshu-Cell（离散扩散）、同济 AlphaCell（Mamba+Transformer+OT-CFM）、百曜 CellOS（JEPA+MoE，12B，厂商口径）、之江—华大 scDifformer（扩散后训练）。<span class="tag">新架构</span></p></div>
+  </div>
+</section>
+
+<!-- ============ 3 技术版图 ============ -->
+<section id="s3">
+  <h2><span class="no">03</span>技术版图：四把尺子看懂一个 scFM</h2>
+  <p class="lede">面对一个 scFM，最有效的提问顺序是：它把什么当成 token？用什么目标预训练？吃什么模态？最终输出什么？这四个问题基本决定了它的能力边界。</p>
+
+  <h3>3.1 按架构：五种主流路线</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4>A. Encoder-only（BERT 式）</h4>
+      <p>双向注意力 + 掩码基因预测。代表：<strong>scBERT、Geneformer、GeneCompass、UCE、SCimilarity</strong>。优点是嵌入质量高、适合分类/检索/注释；缺点是不能直接生成表达谱。</p>
+    </div>
+    <div class="card">
+      <h4>B. Decoder-only（GPT / 自回归）</h4>
+      <p>单向注意力 + 下一 token 预测。代表：<strong>tGPT、scGPT、TranscriptFormer</strong>。优点是天然支持生成与扰动模拟；缺点是基因顺序被人为强加，且推理成本随基因数增长。</p>
+    </div>
+    <div class="card">
+      <h4>C. Encoder–decoder / 非对称</h4>
+      <p>编码器压缩、解码器重建，常用「表达值 + 基因身份」双通道。代表：<strong>scFoundation</strong>（19,264 基因、1 亿参数）、<strong>CellPLM</strong>。适合补全、去噪、跨平台迁移。</p>
+    </div>
+    <div class="card">
+      <h4>D. 非 Transformer 主干</h4>
+      <p><strong>CellFM</strong> 用 RetNet（线性注意力，长序列更省算力）；<strong>AlphaCell</strong> 用 Mamba + Transformer 混合；<strong>Geneformer V2</strong> 把上下文从 2,048 扩到 4,096。方向都是「比 Transformer 更适合高维稀疏表」。</p>
+    </div>
+    <div class="card">
+      <h4>E. 扩散 / 流匹配 / JEPA</h4>
+      <p><strong>Lingshu-Cell</strong>（掩码离散扩散）、<strong>scDifformer</strong>（扩散后训练）、<strong>AlphaCell</strong>（OT-CFM 流匹配）、<strong>CellOS</strong>（JEPA 联合嵌入预测）。它们不再「复述输入」，而是在隐空间或概率路径上建模状态转移——这是 2026 年最值得关注的架构变化。</p>
+    </div>
+    <div class="card">
+      <h4>F. 文本桥接（LLM 路线）</h4>
+      <p><strong>Cell2Sentence</strong> 把细胞转成基因名序列微调 GPT-2；<strong>GenePT</strong> 直接用 GPT-3.5 生成基因嵌入；<strong>CellWhisperer / CellHermes</strong> 用自然语言做零样本注释与推理。优势是冷启动与可解释性，劣势是表达值精度。<sup class="ref"><a href="#r35">[35]</a><a href="#r36">[36]</a></sup></p>
+    </div>
+  </div>
+
+  <h3>3.2 按 tokenization：这是最被低估的设计选择</h3>
+  <p>腾讯 Jarvis Lab 的 ACL 2025 综述把单细胞基础语言模型拆成「tokenization—预训练/调优范式—下游任务」三层，其中 tokenization 直接决定了模型能保留多少定量信息、能覆盖多少基因。<sup class="ref"><a href="#r31">[31]</a></sup></p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>策略</th><th>做法</th><th>代表模型</th><th>优点</th><th>代价</th></tr></thead>
+      <tbody>
+        <tr><td class="name">排名（rank）</td><td>按表达量排序，取 top-k 基因</td><td>Geneformer、scGPT（部分）</td><td>对测序深度与批次更稳健；序列短</td><td>丢失绝对表达量；低表达关键基因被截断</td></tr>
+        <tr><td class="name">分箱（binning）</td><td>把连续表达值离散成若干 bin</td><td>scBERT</td><td>实现简单、可复用分类头</td><td> bin 边界敏感；稀疏零值信息损失</td></tr>
+        <tr><td class="name">连续投影</td><td>用线性层直接映射表达值</td><td>scFoundation、CellPLM</td><td>保留定量信息；适合重建</td><td>对噪声与批次更敏感</td></tr>
+        <tr><td class="name">基因名文本</td><td>把基因符号当词、细胞当句</td><td>Cell2Sentence、GenePT</td><td>可复用 LLM 语义先验；零样本强</td><td>表达值精度低；依赖基因命名规范</td></tr>
+        <tr><td class="name">表达感知注意力</td><td>把 log-count 作为注意力 bias</td><td>TranscriptFormer</td><td>不复制 token、保留计数；跨物种</td><td>实现复杂；对超参敏感</td></tr>
+        <tr><td class="name">细胞为 token</td><td>细胞是词、组织是句</td><td>tGPT、CellPLM</td><td>显式建模细胞间关系；速度快</td><td>单细胞分辨率下降；依赖空间/邻接信息</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.3 按模态：从单一转录组走向「多组学 + 空间」</h3>
+  <ul>
+    <li><strong>RNA-only</strong>：绝大多数模型（Geneformer、scGPT、scFoundation、CellFM、GeneCompass）。</li>
+    <li><strong>RNA + ATAC</strong>：scGPT 的多组学版本、CellPLM 的多模态扩展。</li>
+    <li><strong>RNA + 蛋白</strong>：<strong>CAPTAIN</strong>（2026，Nature Communications）在 co-assayed CITE-seq 上预训练，是「蛋白模态」的代表。<sup class="ref"><a href="#r26">[26]</a></sup></li>
+    <li><strong>RNA + 空间</strong>：<strong>Nicheformer</strong>（Nature Methods 2025）、<strong>scGPT-spatial</strong>、<strong>Novae</strong>；2026 年的统一评测显示，空间/图模型在保留组织结构上更好，但在纯细胞身份任务上不如表达模型。<sup class="ref"><a href="#r24">[24]</a><a href="#r37">[37]</a></sup></li>
+    <li><strong>跨物种</strong>：UCE（8 物种）、TranscriptFormer（12 物种、15.3 亿年进化）、GeneCompass（人+鼠）。</li>
+  </ul>
+  <p>值得注意的一个趋势是「生物语言模型」的合流：TranscriptFormer 用 ESM-2 的蛋白嵌入作为基因表征；DNA 语言模型（如华大 Genos）为调控序列提供先验；单细胞模型则提供细胞状态与扰动响应。未来的 scFM 很可能不是「单细胞专用」，而是<strong>蛋白—基因组—转录组—空间</strong>多语言模型的联合体。<sup class="ref"><a href="#r10">[10]</a><a href="#r40">[40]</a></sup></p>
+
+  <h3>3.4 按目标：从「表征」到「生成」再到「模拟」</h3>
+  <div class="matrix">
+    <div class="mx"><div class="h">表征型（representation）</div><div class="b">输出细胞/基因嵌入，服务聚类、注释、检索。<b>UCE、SCimilarity、Geneformer</b>。评测相对成熟，价值最确定。</div></div>
+    <div class="mx"><div class="h">生成型（generative）</div><div class="b">重建或生成表达谱，服务去噪、补全、跨平台。<b>scFoundation、scMulan、Lingshu-Cell</b>。指标与生物学一致性争议最大。</div></div>
+    <div class="mx"><div class="h">模拟型（simulation）</div><div class="b">给定起始状态与扰动，预测状态转移。<b>State、AlphaCell、CellOS、GEARS</b>。最接近「虚拟细胞」，也最难验证。</div></div>
+  </div>
+</section>
+
+<!-- ============ 4 模型全景 ============ -->
+<section id="s4">
+  <h2><span class="no">04</span>模型全景：20 个代表与两条规模曲线</h2>
+  <p class="lede">下表按「首次公开时间」排序，只收录有论文、预印本或官方模型卡可查的模型。不同论文的细胞计数口径（是否去重、是否含鼠/多物种、是否质控后）差异很大，跨行比较时请把它们当作数量级而非精确值。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>模型</th><th>时间</th><th>牵头机构</th><th>预训练语料</th><th>参数</th><th>架构 / 目标</th><th>模态</th><th>许可</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name">scBERT</td><td>2021.12<span class="mini">NMI 2022</span></td><td>腾讯 AI Lab</td><td>~110 万<span class="mini">PanglaoDB，209 数据集</span></td><td>未公开</td><td>BERT / Performer，掩码基因</td><td>RNA</td><td><span class="pill p-open">GPL-3.0</span></td></tr>
+        <tr><td class="name">tGPT</td><td>2022</td><td>同济大学等</td><td>~2,200 万</td><td>未公开</td><td>GPT，细胞为 token</td><td>RNA</td><td><span class="pill p-part">开源</span></td></tr>
+        <tr><td class="name">Geneformer</td><td>2022<span class="mini">Nature 2023</span></td><td>Gladstone / UCSF</td><td>3,000 万<span class="mini">Genecorpus-30M</span></td><td>10.3M / 106M</td><td>BERT，rank token；V2 语料 95M（当前 checkpoint 23M）、4,096 上下文</td><td>RNA</td><td><span class="pill p-part">开源*</span></td></tr>
+        <tr><td class="name">scGPT</td><td>2023<span class="mini">Nat Methods 2024</span></td><td>多伦多大学 / Vector</td><td>3,300 万</td><td>53M</td><td>GPT 式掩码自注意力，生成式；12 层/512 维</td><td>RNA + ATAC</td><td><span class="pill p-open">MIT</span></td></tr>
+        <tr><td class="name">scFoundation</td><td>2023.05<span class="mini">Nat Methods 2024</span></td><td>清华大学 + 百图生科</td><td>5,000 万</td><td>100M</td><td>非对称 encoder–decoder；19,264 基因</td><td>RNA</td><td><span class="pill p-open">Apache-2.0</span></td></tr>
+        <tr><td class="name">xTrimoGene</td><td>2023.11<span class="mini">NeurIPS 2023</span></td><td>百图生科 + 清华</td><td>&gt;5,000 万</td><td>未公开</td><td>非对称，面向扰动与药敏</td><td>RNA</td><td><span class="pill p-closed">API</span></td></tr>
+        <tr><td class="name">CellPLM</td><td>2024<span class="mini">ICLR 2024</span></td><td>密歇根州立等</td><td>未公开</td><td>未公开</td><td>细胞为 token；空间转录组预训练</td><td>RNA + 空间</td><td><span class="pill p-open">开源</span></td></tr>
+        <tr><td class="name">GeneCompass</td><td>2024.10<span class="mini">Cell Research</span></td><td>中科院动物所/计算所等</td><td>1.0177 亿<span class="mini">人 + 鼠，质控后</span></td><td>~100M</td><td>BERT + 四类生物先验知识</td><td>RNA</td><td><span class="pill p-na">无 LICENSE</span></td></tr>
+        <tr><td class="name">scMulan</td><td>2024.01<span class="mini">bioRxiv v2</span></td><td>清华大学</td><td>~1 亿等效</td><td>368M</td><td>生成式，多任务属性预测</td><td>RNA</td><td><span class="pill p-part">CC BY-NC-ND</span></td></tr>
+        <tr><td class="name">SCimilarity</td><td>2024.11<span class="mini">Nature 638</span></td><td>Genentech</td><td>2,340 万<span class="mini">412 项研究</span></td><td>未公开</td><td>度量学习，跨研究细胞检索</td><td>RNA</td><td><span class="pill p-open">开源</span></td></tr>
+        <tr><td class="name">UCE</td><td>2023<span class="mini">Nature 2026</span></td><td>Stanford</td><td>3,600 万<span class="mini">8 物种，300+ 数据集</span></td><td>650M</td><td>33 层，零样本通用嵌入</td><td>RNA</td><td><span class="pill p-open">开源</span></td></tr>
+        <tr><td class="name">State</td><td>2025.06<span class="mini">Cell 2026</span></td><td>Arc Institute</td><td>1.7 亿观测 + 1 亿扰动</td><td>未公开</td><td>SE + ST 双模块；集合注意力</td><td>RNA + 扰动</td><td><span class="pill p-part">非商用</span></td></tr>
+        <tr><td class="name">TranscriptFormer</td><td>2025.04<span class="mini">Science 2026</span></td><td>CZI</td><td>1.12 亿<span class="mini">12 物种</span></td><td>368–542M</td><td>自回归 + 表达感知注意力；ESM-2 基因嵌入</td><td>RNA</td><td><span class="pill p-open">MIT</span></td></tr>
+        <tr><td class="name">Nicheformer</td><td>2024<span class="mini">Nat Methods 2025</span></td><td>Helmholtz Munich</td><td>未公开</td><td>未公开</td><td>单细胞 + 空间联合预训练</td><td>RNA + 空间</td><td><span class="pill p-open">开源</span></td></tr>
+        <tr><td class="name">CellFM</td><td>2025.05<span class="mini">Nat Commun</span></td><td>中山大学 + 华为 + 新格元</td><td>1 亿人类细胞</td><td>800M</td><td>RetNet；MindSpore + 昇腾</td><td>RNA</td><td><span class="pill p-part">Other</span></td></tr>
+        <tr><td class="name">CAPTAIN</td><td>2026.05<span class="mini">Nat Commun</span></td><td>湖南大学等</td><td>未公开</td><td>未公开</td><td>多模态联合预训练</td><td>RNA + 蛋白</td><td><span class="pill p-part">见论文</span></td></tr>
+        <tr><td class="name">scDifformer</td><td>2026.07<span class="mini">NAR</span></td><td>之江实验室 + 华大研究院</td><td>未公开</td><td>未公开</td><td>预训练 + 扩散后训练 + 微调</td><td>RNA + 空间</td><td><span class="pill p-part">CC BY-NC</span></td></tr>
+        <tr><td class="name">Lingshu-Cell</td><td>2026.08</td><td>阿里达摩院</td><td>未公开</td><td>未公开</td><td>掩码离散扩散；18,000 基因</td><td>RNA</td><td><span class="pill p-part">预印本</span></td></tr>
+        <tr><td class="name">AlphaCell</td><td>2026.03</td><td>同济大学 DELTA Lab</td><td>未公开</td><td>1.2B 解码器</td><td>Mamba + Transformer + OT-CFM 流匹配</td><td>RNA</td><td><span class="pill p-part">预印本</span></td></tr>
+        <tr><td class="name">CellOS</td><td>2026.07</td><td>百曜科技</td><td>3.905 亿<span class="mini">47,845 样本；厂商口径</span></td><td>12B MoE</td><td>LLM-JEPA 双视角 + Dense-to-MoE</td><td>RNA</td><td><span class="pill p-closed">未开源</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">* Geneformer 的代码与权重许可在不同版本/仓库中不完全一致，商用前需逐一核对；「开源」仅表示代码可见，不代表可自由商用。未公开项以「未公开」标注，未做推测。<br><span class="only-mobile">提示：表格可左右滑动查看完整列。</span></p>
+
+  <div class="grid g2" style="margin-top:22px">
+    <div class="chart">
+      <h4>训练语料规模（百万细胞）</h4>
+      <p class="sub">不同论文的去重与质控口径不同，仅作数量级对比</p>
+      <div class="bar-row"><div class="nm">Geneformer</div><div class="track"><div class="fill" style="width:7.7%"></div></div><div class="val">30 M</div></div>
+      <div class="bar-row"><div class="nm">scGPT</div><div class="track"><div class="fill" style="width:8.5%"></div></div><div class="val">33 M</div></div>
+      <div class="bar-row"><div class="nm">scFoundation</div><div class="track"><div class="fill" style="width:12.8%"></div></div><div class="val">50 M</div></div>
+      <div class="bar-row"><div class="nm">GeneCompass</div><div class="track"><div class="fill" style="width:26.1%"></div></div><div class="val">102 M</div></div>
+      <div class="bar-row"><div class="nm">CellFM</div><div class="track"><div class="fill" style="width:25.6%"></div></div><div class="val">100 M</div></div>
+      <div class="bar-row"><div class="nm">TranscriptFormer</div><div class="track"><div class="fill" style="width:28.7%"></div></div><div class="val">112 M</div></div>
+      <div class="bar-row"><div class="nm">State（合计）</div><div class="track"><div class="fill" style="width:69.2%"></div></div><div class="val">270 M</div></div>
+      <div class="bar-row hl"><div class="nm">CellOS*</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">390 M</div></div>
+      <p class="small" style="margin-top:10px">* 厂商口径。State 为 1.7 亿观测 + 1 亿扰动之和。</p>
+    </div>
+    <div class="chart">
+      <h4>参数量级（对数视角）</h4>
+      <p class="sub">从 1,000 万到 120 亿，跨度约三个数量级</p>
+      <div class="bar-row"><div class="nm">Geneformer</div><div class="track"><div class="fill" style="width:4%"></div></div><div class="val">10 M</div></div>
+      <div class="bar-row"><div class="nm">scGPT</div><div class="track"><div class="fill" style="width:19%"></div></div><div class="val">53 M</div></div>
+      <div class="bar-row"><div class="nm">scFoundation</div><div class="track"><div class="fill" style="width:33%"></div></div><div class="val">100 M</div></div>
+      <div class="bar-row"><div class="nm">scMulan</div><div class="track"><div class="fill" style="width:55%"></div></div><div class="val">368 M</div></div>
+      <div class="bar-row"><div class="nm">UCE</div><div class="track"><div class="fill" style="width:68%"></div></div><div class="val">650 M</div></div>
+      <div class="bar-row"><div class="nm">CellFM</div><div class="track"><div class="fill" style="width:75%"></div></div><div class="val">800 M</div></div>
+      <div class="bar-row"><div class="nm">AlphaCell</div><div class="track"><div class="fill" style="width:82%"></div></div><div class="val">1.2 B</div></div>
+      <div class="bar-row hl"><div class="nm">CellOS*</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">12 B</div></div>
+      <p class="small" style="margin-top:10px">* 厂商口径，MoE 稀疏激活；与稠密模型不可直接比较。</p>
+    </div>
+  </div>
+
+  <div class="callout c-warn">
+    <div class="t">△ 数字陷阱</div>
+    <p>「最大」是一个高频营销词。2025 年 CellFM 自称「比同代单物种模型大约 8 倍」；2026 年 CellOS 自称「公开报道中参数规模最大的单细胞基础模型」。二者都缺少独立第三方复核，且训练数据、评测集、任务定义均不同。看到「最大」时，先问三个问题：<strong>和谁比？用什么任务比？数据有没有泄漏？</strong></p>
+  </div>
+
+  <h3>4.1 三个「不是最大但很重要」的模型</h3>
+  <div class="grid g3">
+    <div class="mcard">
+      <div class="top"><div class="nm">SCimilarity</div><div class="yr">2024</div></div>
+      <div class="org">Genentech</div>
+      <div class="desc">不做生成，只做「细胞检索」：把 2,340 万细胞映射到统一空间，输入一个细胞就能找到全身相似的细胞状态。它的价值在于把 scFM 变成<strong>可查询的数据库</strong>，并用湿实验验证了体外命中。</div>
+      <div class="spec"><span>度量学习</span><span>23.4M 细胞</span><span>Nature</span></div>
+    </div>
+    <div class="mcard">
+      <div class="top"><div class="nm">State</div><div class="yr">2025</div></div>
+      <div class="org">Arc Institute</div>
+      <div class="desc">第一个把「扰动数据」放在中心位置的模型：SE 学嵌入、ST 学状态转移。它明确说「测序数据只能看到相关，扰动数据才能看到因果」，这是虚拟细胞路线的方法论宣言。</div>
+      <div class="spec"><span>SE + ST</span><span>270M 细胞</span><span>非商用</span></div>
+    </div>
+    <div class="mcard">
+      <div class="top"><div class="nm">TranscriptFormer</div><div class="yr">2025</div></div>
+      <div class="org">CZI</div>
+      <div class="desc">用 12 个物种、15.3 亿年进化跨度训练，证明「跨物种通用表征」可行；MIT 许可 + 模型卡齐全，是目前工程可用性最好的跨物种模型之一。</div>
+      <div class="spec"><span>112M 细胞</span><span>12 物种</span><span>MIT</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 重点方向 ============ -->
+<section id="s5">
+  <h2><span class="no">05</span>2024–2026 的五个重点方向</h2>
+  <p class="lede">如果把 2023 年定义为「scFM 元年」，那么 2024–2026 的主线不是「再做一个更大的模型」，而是把模型推向更难的生物学问题，并反过来暴露了评测与数据的短板。</p>
+
+  <h3>5.1 规模化与数据工程：从「堆数据」到「选数据」</h3>
+  <p>2023–2024 的默认假设是「数据越多越好」。2026 年 6 月 <em>Nature Methods</em> 的一项系统研究打破了它：作者用 2,220 万细胞训练了 400 个模型、做了 6,400 次实验，发现性能在只用 <strong>1%–10%</strong> 预训练数据时就进入平台期；在某些任务上，简单基线（HVG、Harmony）与复杂 transformer 表现相当甚至更好；单细胞领域<strong>没有清晰的数据 scaling law</strong>。<sup class="ref"><a href="#r15">[15]</a></sup></p>
+  <p>这与「数据质量/多样性比数量更重要」的判断一致：去重、去批次、去低质量细胞、平衡细胞类型分布，比再加一亿个同质细胞更有价值。Arc 的 scBaseCount 用 AI agent 统一清洗 2 亿细胞，正是这条思路的基础设施化。<sup class="ref"><a href="#r13">[13]</a></sup></p>
+
+  <h3>5.2 扰动预测与虚拟细胞：从「描述」到「干预」</h3>
+  <p>这是目前最热、也最难的方向。核心问题是：给定起始细胞状态和一个扰动（基因敲除、药物、细胞因子），能否预测全转录组的响应？</p>
+  <ul>
+    <li><strong>State</strong>（Arc，2025）：在 Tahoe-100M 上，Arc 博客称扰动区分度提升 50%、差异表达基因识别准确率翻倍；2026-08 正式发表于 <em>Cell</em> 的论文摘要则表述为「效应区分度提升超过 30%」。两个数字口径不同，引用时应以论文为准。Arc 称这是「第一个稳定超过线性基线的模型」。<sup class="ref"><a href="#r11">[11]</a><a href="#r41">[41]</a></sup></li>
+    <li><strong>Virtual Cell Challenge 2025</strong>：H1 胚胎干细胞、300 个 CRISPRi 扰动、约 30 万细胞。最终结论相当克制：「扰动预测模型尚未在所有指标上稳定超过朴素基线」；几乎所有模型在 MAE 上都不如基线；获胜方案都是「深度学习 + 经典统计特征」的混合体。冠军是百图生科（BioMap Research）的 xTrimoSCPerturb，它基于改进的 scFoundation 架构，并显式加入训练集 DEG 频率与平均表达作为特征。<sup class="ref"><a href="#r12">[12]</a></sup></li>
+    <li><strong>2026 的新玩家</strong>：Lingshu-Cell（阿里达摩院，离散扩散，VCC H1 基准领先）、AlphaCell（同济，流匹配 + 世界模型）、CellOS（百曜，JEPA + 12B MoE）。它们共同的关键词是「状态转移」而不是「表达重建」。<sup class="ref"><a href="#r27">[27]</a><a href="#r29">[29]</a><a href="#r28">[28]</a></sup></li>
+  </ul>
+
+  <div class="callout c-risk">
+    <div class="t">▲ 一个残酷的对照</div>
+    <p>EMBL 团队在 Norman 双扰动数据上比较了 5 个基础模型 + 2 个深度学习模型与线性基线：<strong>所有模型的误差都高于 additive 基线</strong>，交互预测没有一个优于「预测无变化」；在 FDR 5% 下，124,000 个基因对里只有 5,035 个（4.2%）是真实交互。换句话说，大部分「扰动预测」的可用信号极其稀疏。<sup class="ref"><a href="#r18">[18]</a></sup></p>
+  </div>
+
+  <h3>5.3 多模态与空间：从「一维转录组」到「组织上下文」</h3>
+  <p>单细胞数据丢失了空间位置，而空间数据又往往分辨率不足。2025–2026 年的解法是「联合预训练」：Nicheformer 把单细胞与空间数据放在一起；CellPLM 把细胞当 token、组织当句子；scGPT-spatial 把空间邻域纳入注意力；CAPTAIN 把 RNA 与蛋白放在同一个框架里。<sup class="ref"><a href="#r37">[37]</a><a href="#r24">[24]</a><a href="#r26">[26]</a></sup></p>
+  <p>但 2026 年 7 月的统一评测给这股热潮泼了冷水：在 6 个代表性模型（Nicheformer、CellPLM、scGPT-spatial、GenePT、scELMo、Novae）上，<strong>没有模型在所有任务上领先</strong>；排名会随模态、预处理、tokenization、生物先验、域偏移和指标而变化。空间/图模型更擅长保留组织结构，表达模型更擅长细胞身份，语言衍生嵌入在某些扰动指标上有竞争力。<sup class="ref"><a href="#r24">[24]</a></sup></p>
+
+  <h3>5.4 跨物种与通用嵌入：一个「零样本」的例外</h3>
+  <p>在大量负面评测中，跨物种通用嵌入是一个相对正面的例外。UCE 在 8 个物种、3,600 万细胞上训练，能嵌入训练时没见过的物种，并且零样本识别发育谱系；TranscriptFormer 用 12 个物种、15.3 亿年进化跨度，展示了跨物种细胞类型分类与疾病状态识别。<sup class="ref"><a href="#r8">[8]</a><a href="#r10">[10]</a></sup></p>
+  <p>这类模型的价值不在「替代专用工具」，而在「把不同物种、不同平台、不同实验室的数据放进同一个坐标系」——这是比较生物学、跨物种药物毒理、以及数据稀缺物种研究的基础设施。</p>
+
+  <h3>5.5 评测与基准：从「各自报喜」到「公共考场」</h3>
+  <p>2024 年之前，每个模型论文都用自己的任务和数据集；2025 年之后，公共评测开始出现：</p>
+  <ul>
+    <li><strong>scEval</strong>（耶鲁，Adv Sci 2026）：8 类任务、10 个 scFM，结论是「没有任何模型在所有任务上稳定优于专用方法」。</li>
+    <li><strong>Cell_Eval</strong>（Arc）：针对虚拟细胞的 7 项指标，强调差异表达与扰动强度，而不只是 MSE。</li>
+    <li><strong>PertEval-scFM</strong>（ICML 2025）：标准化扰动预测评测，结论是零样本嵌入相对简单基线「提升有限」。</li>
+    <li><strong>SCMBench</strong>（Nat Commun 2026）：23 种多组学整合方法，结论是「基础模型在多组学整合上不如领域专用模型」，并提出轻量适配策略。</li>
+    <li><strong>VCC</strong>（Arc，2025 起）：把「能否替代一次 Perturb-seq 实验」作为终极问题，用 H1 细胞系制造分布偏移。<sup class="ref"><a href="#r16">[16]</a><a href="#r12">[12]</a><a href="#r22">[22]</a><a href="#r25">[25]</a></sup></li>
+  </ul>
+
+  <h3>5.6 新架构：扩散、JEPA、流匹配与「世界模型」</h3>
+  <p>2026 年最值得注意的变化是：一批模型不再做「掩码—重建」，而是直接建模<strong>状态分布与状态转移</strong>。</p>
+  <div class="grid g2">
+    <div class="card">
+      <h4>离散扩散：Lingshu-Cell</h4>
+      <p>阿里达摩院，2026-08。把转录组当成离散 token，用掩码离散扩散学习状态分布；不依赖 HVG 预选，覆盖约 18,000 个基因；支持「细胞类型/供体 × 扰动」的条件生成，在 VCC H1 基准与 PBMC 细胞因子响应上领先。<sup class="ref"><a href="#r27">[27]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>JEPA：CellOS</h4>
+      <p>百曜科技，2026-07。用「表达视角 + 群体感知视角」做联合嵌入预测，在隐空间对齐两种观测，而不是复述输入；Dense-to-MoE 扩容到 12B。厂商称在 Pearson_edist 上 0.619，对比 TranscriptFormer 0.373。<strong>这些数字尚未经独立复现。</strong><sup class="ref"><a href="#r28">[28]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>流匹配 + 世界模型：AlphaCell</h4>
+      <p>同济 DELTA Lab，2026-03。19,253 个 HGNC 基因全量输入，Mamba+Transformer 压到 32×128 连续隐流形，再用 OT-CFM 建模扰动后的状态演化；1.2B MoE 解码器保证「隐空间任意点都能翻回真实表达谱」。<sup class="ref"><a href="#r29">[29]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>扩散后训练：scDifformer</h4>
+      <p>之江实验室 + 华大研究院，NAR 2026。提出「预训练—扩散后训练—微调」三步范式，把扩散模型作为后训练阶段来增强生成与空间反卷积能力。这是「不换主干、只换后训练」的务实路线。<sup class="ref"><a href="#r30">[30]</a></sup></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 产业生态 ============ -->
+<section id="s6">
+  <h2><span class="no">06</span>产业生态：谁在造模型，谁在造数据，谁在买单</h2>
+  <p class="lede">单细胞基础模型不是一条独立的赛道，它嵌在「测序仪器—数据平台—模型—湿实验—药企」的五层结构里。越往上，玩家越少，越往下，越依赖规模效应。</p>
+
+  <h3>6.1 五层结构</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>层级</th><th>核心能力</th><th>代表玩家</th><th>商业模式</th></tr></thead>
+      <tbody>
+        <tr><td class="name">① 测序与扰动数据生产</td><td>高通量 scRNA-seq、Perturb-seq、药物筛选</td><td>10x Genomics、Parse Biosciences、Ultima Genomics、Tahoe、Arc、华大（Stereo-cell）</td><td>仪器/试剂、数据授权、服务</td></tr>
+        <tr><td class="name">② 数据平台与图谱</td><td>数据聚合、标准化、可查询</td><td>CZI（CELLxGENE）、Arc（Virtual Cell Atlas）、HCA、华大（10 Billion Cells Alliance）</td><td>公共品/联盟、云服务</td></tr>
+        <tr><td class="name">③ 基础模型与工具</td><td>预训练、微调、嵌入、生成</td><td>Arc、CZI、Gladstone、清华/BioMap、中山大学/华为、阿里达摩院、之江/华大</td><td>开源 + API、许可、联合研发</td></tr>
+        <tr><td class="name">④ 垂直应用</td><td>靶点发现、药敏预测、毒性评估、细胞治疗</td><td>Genentech/Roche、Recursion、Insitro、Xaira、Noetik、百曜</td><td>管线、平台合作、里程碑付款</td></tr>
+        <tr><td class="name">⑤ 算力与框架</td><td>GPU、训练框架、推理优化</td><td>NVIDIA（BioNeMo）、华为（MindSpore/昇腾）、云厂商</td><td>硬件、云、软件订阅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.2 海外：三家「公共品」机构定义了游戏规则</h3>
+  <div class="grid g3">
+    <div class="mcard">
+      <div class="top"><div class="nm">Arc Institute</div><div class="yr">2022–</div></div>
+      <div class="org">非营利研究机构 · 美国</div>
+      <div class="desc">用「数据 + 模型 + 评测 + 竞赛」四件套建立生态：Tahoe-100M（1 亿细胞扰动数据）、scBaseCount（2 亿细胞 AI 清洗）、State（虚拟细胞模型，2026-08 正式发表于 <em>Cell</em>）、Cell_Eval、VCC。2026 年又推出 Stack（in-context learning，无需微调）与 Bolero（细胞状态条件化的调控序列模型），并获 The Audacious Project 支持「10 亿级细胞实验」。它的策略不是卖模型，而是<strong>定义标准和公共数据</strong>。<sup class="ref"><a href="#r11">[11]</a><a href="#r41">[41]</a></sup></div>
+      <div class="spec"><span>State</span><span>Stack</span><span>Tahoe-100M</span><span>VCC</span></div>
+    </div>
+    <div class="mcard">
+      <div class="top"><div class="nm">CZI / Biohub</div><div class="yr">2016–</div></div>
+      <div class="org">慈善基金会 · 美国</div>
+      <div class="desc">CELLxGENE 是全球最常用的单细胞数据门户；TranscriptFormer 是跨物种生成模型（2026-07 正式发表于 <em>Science</em>）；Virtual Cells Platform 提供模型、基准、数据与 CLI。2025-10 与 NVIDIA 扩大合作，把数据扩到 PB 级，并把 cz-benchmarks、CodonFM 等接入平台。CZI 的定位是<strong>开放科学基础设施</strong>，而非商业模型供应商。<sup class="ref"><a href="#r32">[32]</a><a href="#r42">[42]</a></sup></div>
+      <div class="spec"><span>CELLxGENE</span><span>TranscriptFormer</span><span>VCP</span></div>
+    </div>
+    <div class="mcard">
+      <div class="top"><div class="nm">Genentech / Roche</div><div class="yr">2024–</div></div>
+      <div class="org">药企 · 瑞士/美国</div>
+      <div class="desc">AIVC 宣言的共同作者；SCimilarity（<em>Nature</em> 638:1085–1094）让「细胞检索」进入药物发现流程；BRAID 部门把基础模型与 Perturb-seq、cell painting、optical pooled screen 绑定。这是<strong>「药企自建模型」</strong>路线的代表，但目前公开的落地仍以「模型提假设 + 湿实验验证」为主。<sup class="ref"><a href="#r9">[9]</a><a href="#r43">[43]</a></sup></div>
+      <div class="spec"><span>SCimilarity</span><span>AIVC</span><span>BRAID</span></div>
+    </div>
+  </div>
+
+  <h3>6.3 大厂：算力与框架比模型更早赚钱</h3>
+  <ul>
+    <li><strong>NVIDIA</strong>：BioNeMo 框架已收录 Geneformer（10M/106M 检查点）及训练/推理 recipe；官方文档中<strong>未找到 scGPT 条目</strong>，因此「BioNeMo 支持 scGPT」一说暂无一手依据。对 NVIDIA 而言，scFM 是 GPU 与生物计算平台的重要应用场景。<sup class="ref"><a href="#r33">[33]</a></sup></li>
+    <li><strong>Google</strong>：2025-10 与耶鲁发布 <strong>C2S-Scale 27B</strong>（基于 Gemma），在「免疫背景阳性/中性」双情境下模拟 4,000+ 药物，预测 CK2 抑制剂 silmitasertib + 干扰素可增强抗原呈递，并完成活细胞验证。这是目前少数具备「模型—湿实验」闭环的公开案例。<sup class="ref"><a href="#r44">[44]</a></sup></li>
+    <li><strong>Microsoft Research</strong>：不是模型卖方，而是「裁判」——2025 年的零样本评测（Kedzierska 等）与 2026 年的数据规模研究（DenAdel 等）都出自 MSR，直接改变了领域的叙事。<sup class="ref"><a href="#r17">[17]</a><a href="#r15">[15]</a></sup></li>
+    <li><strong>Meta / Amazon</strong>：在单细胞基础模型上没有公开的旗舰产品；贡献主要在通用模型、云平台与开源工具层。Google 的 AlphaGenome 属于基因组调控，不是单细胞表达模型，不宜混为一谈。</li>
+    <li><strong>Altos Labs</strong>：2025 年 VCC「Generalist Prize」得主，用 flow matching 在 700 万细胞上预训练，证明「非 Transformer 生成模型」在扰动预测上有竞争力。<sup class="ref"><a href="#r12">[12]</a></sup></li>
+  </ul>
+
+  <h3>6.4 中国：一超多强，高校—企业深度绑定</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>路线</th><th>代表</th><th>关键事实</th><th>产业化状态</th></tr></thead>
+      <tbody>
+        <tr><td class="name">清华—百图系</td><td>scFoundation、xTrimoGene、scMulan</td><td>scFoundation：5,000 万细胞/1 亿参数/Apache-2.0；xTrimoGene 仅 API；scMulan 3.68 亿参数/CC BY-NC-ND</td><td>开源 + API 双轨；百图生科商业化</td></tr>
+        <tr><td class="name">中山大学—华为—新格元</td><td>CellFM</td><td>1 亿细胞/8 亿参数；MindSpore + 32 张昇腾 910；Nat Commun 2025</td><td>国产算力标杆；许可见论文</td></tr>
+        <tr><td class="name">阿里达摩院</td><td>Lingshu-Cell</td><td>离散扩散；18,000 基因；VCC H1 基准领先；2026-08 预印本</td><td>研究阶段，未开源</td></tr>
+        <tr><td class="name">之江实验室—华大</td><td>scDifformer</td><td>「预训练—扩散后训练—微调」三步；NAR 2026</td><td>论文阶段；华大另有 Stereo-cell 平台</td></tr>
+        <tr><td class="name">同济 DELTA Lab</td><td>AlphaCell / CellHermes</td><td>Mamba+Transformer+OT-CFM；1.2B 解码器；与 Helmholtz Munich 合作</td><td>概念验证，预印本</td></tr>
+        <tr><td class="name">中科院系</td><td>GeneCompass</td><td>1.0177 亿人+鼠细胞；约 1 亿参数；Cell Research 2024</td><td>开源但无 LICENSE</td></tr>
+        <tr><td class="name">腾讯</td><td>scBERT</td><td>最早的 BERT 路线；PanglaoDB 110 万细胞；GPL-3.0</td><td>2023 年底后基本停更</td></tr>
+        <tr><td class="name">创业公司</td><td>百曜科技（CellOS）</td><td>3.905 亿细胞/12B MoE/JEPA；厂商称多项 SOTA</td><td>融资与商业化早期</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">说明：华大（BGI）在单细胞侧的公开叙事是「Stereo-cell 平台 + 10 Billion Cells Alliance 数据联盟 + Genos 基因组模型」，并未发布以「单细胞表达基础模型」为名的旗舰模型；坊间流传的「华大 GeneCompass」为误传，GeneCompass 的作者单位均为中科院系统。<sup class="ref"><a href="#r39">[39]</a><a href="#r40">[40]</a><a href="#r7">[7]</a></sup></p>
+
+  <h3>6.5 创业公司与资本：从「卖模型」到「卖闭环」</h3>
+  <p>2024–2026 年，单细胞/虚拟细胞方向的融资逻辑发生了明显变化：早期是「我们有更大的模型」，后来是「我们有专有数据 + 湿实验平台 + 药企合同」。典型玩家包括：</p>
+  <ul>
+    <li><strong>Xaira Therapeutics</strong>：2024 年成立，单轮融资 10 亿美元，主打 AI + 湿实验闭环（据公开报道）。</li>
+    <li><strong>Tahoe Therapeutics</strong>（原 Vevo）：Tahoe-100M 的生产者，用 Mosaic 平台规模化生成药物扰动数据。</li>
+    <li><strong>Noetik、Somite.ai、Cellarity</strong>：分别聚焦肿瘤、发育/细胞命运、细胞行为的小分子重编程。</li>
+    <li><strong>百曜科技</strong>：以 CellOS 切入「AI 虚拟细胞」，声称布局管线资产与模型服务两条商业化路径。</li>
+  </ul>
+  <p>共同点是：<strong>没有一家把「基础模型 API」当作唯一收入来源</strong>。模型是入口，数据和实验是壁垒，药物管线或平台合作才是收入。</p>
+
+  <h3>6.6 开源与平台：许可正在成为真正的护城河</h3>
+  <p>单细胞模型的「开源」分成四档：① 代码 + 权重 + 宽松许可（scFoundation Apache-2.0、TranscriptFormer MIT）；② 代码开放但权重受限/非商用（State、Geneformer 部分版本）；③ 只开代码、不开权重（部分中国模型）；④ 只提供 API（xTrimoGene）。</p>
+  <p>对企业用户而言，<strong>许可比性能更早成为选型门槛</strong>：CC BY-NC-ND 的模型不能直接商用；无 LICENSE 的仓库在法律上默认「保留所有权利」；GPL-3.0 可能传染整个软件栈。这是 2026 年 scFM 落地最被低估的摩擦。</p>
+  <p>生态热度也可以量化：GitHub 上 scGPT 约 1,655 star、scFoundation 约 433 star；HuggingFace（经镜像数据，2026-10）Geneformer 近 30 天下载约 4,862 次、likes 321，CellFM 约 34 次，scFoundation 官方仓下载为个位数。这与「论文引用量」形成鲜明反差——<strong>真正被下载、被跑起来的模型，远少于被引用的模型</strong>。<sup class="ref"><a href="#r45">[45]</a></sup></p>
+</section>
+
+<!-- ============ 7 痛点 ============ -->
+<section id="s7">
+  <h2><span class="no">07</span>核心痛点：十个可验证的问题</h2>
+  <p class="lede">这一章不罗列「挑战」这种空话，而是把每个痛点拆成「现象—证据—影响—可能解法」。所有数字都来自可查的论文或官方页面。</p>
+
+  <h3>P1　数据规模悖论：更多数据 ≠ 更好模型</h3>
+  <div class="card">
+    <p><strong>现象：</strong>预训练语料从 3,000 万涨到 3.9 亿，但性能提升远小于预期。</p>
+    <p><strong>证据：</strong>Nature Methods 2026 的系统研究用 2,220 万细胞训练 400 个模型、做 6,400 次实验，发现性能在 1%–10% 数据即饱和；「单细胞基础模型没有清晰的数据 scaling law」。Kedzierska 等也观察到「预训练数据超过阈值后不再带来增益」。<sup class="ref"><a href="#r15">[15]</a><a href="#r17">[17]</a></sup></p>
+    <p><strong>影响：</strong>「堆数据—堆参数」的商业叙事失效；算力投入的边际回报下降；数据<em>多样性</em>与<em>质量</em>比数量更重要。</p>
+    <p><strong>可能解法：</strong>数据选择（data selection）、去重、按任务分层采样、持续学习、以「验证集上的任务增益」决定是否加入新数据。</p>
+  </div>
+
+  <h3>P2　数据质量：稀疏、丢零、双细胞与环境 RNA</h3>
+  <div class="card">
+    <p><strong>现象：</strong>scRNA-seq 天生稀疏（dropout）、有双细胞（doublet）、环境 RNA 污染、批次效应；这些问题在千万级语料上被放大。</p>
+    <p><strong>证据：</strong>2025 年综述明确指出：大规模聚合数据会引入「不同采样与测序协议造成的巨大变异」，双细胞、环境 RNA 等伪影会被模型学成虚假模式；在千万级细胞上做 QC 极其困难。<sup class="ref"><a href="#r1">[1]</a></sup></p>
+    <p><strong>影响：</strong>模型学到的可能是「测序平台特征」而不是「生物学特征」；跨数据集泛化失败；批次校正与生物信号保留难以两全。</p>
+    <p><strong>可能解法：</strong>AI agent 自动清洗（scBaseCount）、统一元数据 schema、合成数据增强、把技术协变量显式建模进模型。</p>
+  </div>
+
+  <h3>P3　数据泄漏：预训练集与测试集「偷偷重叠」</h3>
+  <div class="card">
+    <p><strong>现象：</strong>很多 benchmark 数据集本身就包含在预训练语料里，导致「零样本」成绩被高估。</p>
+    <p><strong>证据：</strong>2026 年的一项审计用 MinHash 逐细胞比对：PBMC 3k 有 <strong>80.4%</strong> 的细胞、人胰岛图谱有 <strong>77.0%</strong> 的细胞与 Genecorpus-30M 显著重叠；而截止日之后发布的数据集（AIDA v2、Tahoe-100M）重叠率为 0%。被污染细胞的嵌入在同供体、同类型内显著更「紧」。<sup class="ref"><a href="#r21">[21]</a></sup></p>
+    <p><strong>影响：</strong>「zero-shot 很强」的结论可能站不住；不同论文的排名不可比；这是一种「双重 dipping」——同一批细胞既塑造预训练表征，又充当评测集。</p>
+    <p><strong>可能解法：</strong>公开逐细胞训练清单、时间切分（cut-off date）、指纹/成员推断审计、使用预训练截止后发布的数据集。</p>
+  </div>
+
+  <h3>P4　评测体系缺失：没有统一的「考场」</h3>
+  <div class="card">
+    <p><strong>现象：</strong>每个模型论文用自己的任务、数据集、指标；跨论文比较几乎不可能。</p>
+    <p><strong>证据：</strong>2025 年综述直言「单细胞领域缺乏统一的基准框架」；2026 年的 harmonised benchmark 发现，6 个模型在 3 种模态、多任务上的排名会随预处理、tokenization、指标而翻转，「没有模型全面领先」。<sup class="ref"><a href="#r1">[1]</a><a href="#r24">[24]</a></sup></p>
+    <p><strong>影响：</strong>用户无法选型；资本无法判断技术优劣；「SOTA」变成营销词。</p>
+    <p><strong>可能解法：</strong>scEval、Cell_Eval、PertEval、SCMBench、VCC 等公共基准；强制报告超参、种子、算力、失败案例。</p>
+  </div>
+
+  <h3>P5　Zero-shot 不敌简单基线：最尴尬的证据</h3>
+  <div class="card">
+    <p><strong>现象：</strong>不微调、直接拿嵌入做下游任务时，scFM 往往不如 HVG、Harmony、逻辑回归、additive 基线。</p>
+    <p><strong>证据：</strong>① Kedzierska：Geneformer 的 ASW 仅 0.38–0.52，HVG 基线除 PBMC 外全部胜出；scGPT 中位 ASW 0.53 ≈ scVI 0.54。② Boiarsky：PBMC 上 L1 逻辑回归在 accuracy 与 macro-F1 上均胜 scBERT；scBERT 去掉预训练后无显著差异（p=0.34/0.59）。③ Ahlmann-Eltze：7 个模型在 Norman 双扰动上误差均高于 additive 基线，交互预测无一优于「无变化」。<sup class="ref"><a href="#r17">[17]</a><a href="#r19">[19]</a><a href="#r18">[18]</a></sup></p>
+    <p><strong>影响：</strong>「基础模型」的核心卖点（零样本泛化）被削弱；但在微调、域内、特征提取场景仍有价值（见 P9 后的「仍然成立的优势」）。</p>
+    <p><strong>可能解法：</strong>把 zero-shot 与 fine-tuned 分开报告；默认提供强基线；用「少样本增益」而不是「零样本绝对分数」作为卖点。</p>
+  </div>
+
+  <h3>P6　架构错配：基因没有顺序，细胞不是孤岛</h3>
+  <div class="card">
+    <p><strong>现象：</strong>把基因当词、细胞当句，忽略了三个根本差异：① scRNA-seq 是「基因袋」而非序列；② 细胞间关系（邻域、信号）比句子间关系更重要；③ 单细胞数据量远小于文本、噪声远大于文本。</p>
+    <p><strong>证据：</strong>CellPLM 的立论就是这三点，并用「细胞为 token、组织为句」+ 空间预训练来回应；2025 年综述也指出「基因没有自然线性顺序，任何序列建模都是近似」，并批评「每个细胞独立训练」忽略了细胞间互作。<sup class="ref"><a href="#r38">[38]</a><a href="#r1">[1]</a></sup></p>
+    <p><strong>影响：</strong>模型可能学到「排序伪影」；空间信息丢失；对细胞通讯、微环境相关任务天然不利。</p>
+    <p><strong>可能解法：</strong>集合/图注意力、空间邻域编码、细胞间对比学习、把「组织」作为建模单元。</p>
+  </div>
+
+  <h3>P7　可解释性：attention 不等于基因调控网络</h3>
+  <div class="card">
+    <p><strong>现象：</strong>论文常把注意力权重当作 GRN 或基因重要性，但注意力并不稳定对应生物学机制。</p>
+    <p><strong>证据：</strong>2025 年综述明确警告：注意力「不总是特征重要性或交互的直接指标」，某些头可能完全不捕捉生物学相关连接；基因嵌入在跨细胞平均时也会偏向广表达基因，低表达但关键的调控基因容易被「平均掉」。<sup class="ref"><a href="#r1">[1]</a></sup></p>
+    <p><strong>影响：</strong>基于注意力的「新靶点发现」可信度存疑；监管与药企难以采信黑箱结论。</p>
+    <p><strong>可能解法：</strong>注意力 + 扰动实验交叉验证、基因中心预训练目标、稀疏可解释头、与已知 GRN 数据库对齐。</p>
+  </div>
+
+  <h3>P8　稀有细胞与长尾：总体 97.5%，稀有类仍失败</h3>
+  <div class="card">
+    <p><strong>现象：</strong>数据分布极度不平衡，模型偏向常见细胞类型；总体准确率很好看，稀有细胞召回率系统性失败。</p>
+    <p><strong>证据：</strong>2025 年综述指出零样本下少数群体注释不可靠；2026 年的受控实验（162 次训练：3 骨架 × 3 数据集 × 6 种长尾损失 × 3 种子）显示总体准确率可达 97.5%，但 rare-class recall 仍系统性失败，且失败由数据结构而非预训练决定。<sup class="ref"><a href="#r1">[1]</a><a href="#r23">[23]</a></sup></p>
+    <p><strong>影响：</strong>稀有细胞往往是疾病关键（干细胞、罕见免疫亚群、微小转移灶）；「总体指标」会掩盖真正的临床价值。</p>
+    <p><strong>可能解法：</strong>重采样/重加权、分层评测、macro-F1 与 per-class recall、针对稀有类的外部验证集。</p>
+  </div>
+
+  <h3>P9　落地成本：算力、微调门槛、许可与监管</h3>
+  <div class="card">
+    <p><strong>现象：</strong>预训练要数十张 GPU、数周；微调要调参经验；很多模型禁止商用；监管对「AI 虚拟细胞」尚无明确路径。</p>
+    <p><strong>证据：</strong>综述指出「预训练需要 4–12 张 A100/H100 数天到数周，更大模型需要更大集群一个月以上」；微调「资源密集且需要大量建模知识」；2026 年多个中国模型的论文许可为 CC BY-NC-ND，直接限制商用。<sup class="ref"><a href="#r1">[1]</a><a href="#r6">[6]</a><a href="#r7">[7]</a></sup></p>
+    <p><strong>影响：</strong>中小实验室与初创公司被挡在门外；药企更倾向「买 API/联合研发」而非自建；开源社区的复现成本高。</p>
+    <p><strong>可能解法：</strong>LoRA/量化/蒸馏、轻量版模型、托管 API、清晰的商用许可、与湿实验服务打包。</p>
+  </div>
+
+  <h3>P10　多模态与空间：融合仍处于早期</h3>
+  <div class="card">
+    <p><strong>现象：</strong>绝大多数 scFM 仍是 RNA-only；RNA+ATAC、RNA+蛋白、RNA+空间的联合预训练模型数量少，且往往在单一模态上表现更好。</p>
+    <p><strong>证据：</strong>SCMBench 评测 23 种多组学整合方法，结论是「基础模型在多组学整合上不如领域专用模型」；2026 年的 harmonised benchmark 也发现，空间/图模型更擅长保留组织结构，表达模型更擅长细胞身份，<strong>没有模型在所有模态上领先</strong>。<sup class="ref"><a href="#r25">[25]</a><a href="#r24">[24]</a></sup></p>
+    <p><strong>影响：</strong>真实生物学同时涉及转录组、表观组、蛋白组与空间位置；单模态模型可能错过调控层与微环境信息，限制「虚拟细胞」的保真度。</p>
+    <p><strong>可能解法：</strong>多模态联合预训练（CAPTAIN）、空间邻域编码（Nicheformer / CellPLM）、跨模态对齐与统一 tokenization、以生物学任务而非重建损失来选模态组合。</p>
+  </div>
+
+  <div class="callout c-key">
+    <div class="t">◆ 但也要说清楚：哪些优势仍然成立</div>
+    <p>① <strong>微调 + 分布外泛化</strong>：scGPT 在多发性硬化数据上优于逻辑回归，且样本越少优势越大；scFoundation 在多个任务上稳定靠前。② <strong>嵌入作特征</strong>：基因嵌入 + 线性解码优于均值/随机嵌入。③ <strong>预训练确有贡献</strong>：预训练模型普遍优于随机初始化。④ <strong>域匹配优于规模</strong>：用 Replogle 扰动数据预训练的线性模型稳定优于通用大模型。换句话说，scFM 的价值在「<strong>域内/近域的微调与特征提取</strong>」，而不是「开箱即用的通用智能」。<sup class="ref"><a href="#r19">[19]</a><a href="#r18">[18]</a><a href="#r22">[22]</a></sup></p>
+  </div>
+</section>
+
+<!-- ============ 8 争议 ============ -->
+<section id="s8">
+  <h2><span class="no">08</span>争议与反思：「基础模型」是否名副其实</h2>
+  <p class="lede">2024–2026 年，领域内部发生了一场罕见的公开争论。它不是「哪个模型更强」，而是「这个范式是否成立」。</p>
+
+  <h3>8.1 三场具体的交锋</h3>
+  <div class="grid g3">
+    <div class="card">
+      <h4>① 逻辑回归 vs scBERT</h4>
+      <p>MIT/Broad 的 Boiarsky 等发现：在 PBMC 上，L1 逻辑回归的 accuracy 与 macro-F1 都高于 scBERT；把 scBERT 的预训练去掉，性能没有显著变化。scGPT 只在多发性硬化（分布外）数据上胜出。作者的结论很直接：<strong>「预训练没有带来有意义的基因表征」</strong>。<sup class="ref"><a href="#r19">[19]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>② HVG vs Geneformer</h4>
+      <p>Microsoft Research 的 Kedzierska 等做了 5 个数据集的零样本评测：Geneformer 的 ASW 只有 0.38–0.52，HVG 基线除 PBMC 外全部胜出；scGPT 与 scVI 几乎持平；批次整合不合格。作者承认部分数据与预训练重叠，但在非重叠子集上结论一致；浙江大学团队的独立评测也得出「没有单一 scFM 全面领先」。<sup class="ref"><a href="#r17">[17]</a><a href="#r20">[20]</a></sup></p>
+    </div>
+    <div class="card">
+      <h4>③ additive vs 所有扰动模型</h4>
+      <p>EMBL 的 Ahlmann-Eltze 等用 Norman 双扰动做「地狱测试」：所有深度学习模型的误差都高于「两个单扰动的加和」这一朴素基线；交互预测没有一个优于「预测无变化」。真正有信息的交互只占 4.2%。这不是「模型不够大」，而是<strong>信号本身太稀疏</strong>。<sup class="ref"><a href="#r18">[18]</a></sup></p>
+    </div>
+  </div>
+
+  <h3>8.2 模型方的回应与争论的实质</h3>
+  <p>scGPT 作者在 <em>Nature Machine Intelligence</em> 发表 Reply，认为评测存在任务选择、超参设置、数据划分等偏差；双方的分歧不只是数字，而是<strong>「什么算成功」</strong>：</p>
+  <ul>
+    <li>模型方倾向于用「多个任务的平均表现」「微调后的上限」来证明价值；</li>
+    <li>批评方倾向于用「零样本、强基线、分布外」来检验「基础模型」的成色；</li>
+    <li>双方都同意的一点是：<strong>领域缺少统一、可复现、防泄漏的评测标准</strong>。</li>
+  </ul>
+  <p>这也是为什么 2025–2026 年出现了这么多「基准论文」——它们本身不是模型，却在重塑领域的评价体系。<sup class="ref"><a href="#r16">[16]</a><a href="#r22">[22]</a><a href="#r24">[24]</a><a href="#r25">[25]</a></sup></p>
+
+  <h3>8.3 「规模」是不是答案？</h3>
+  <p>scFoundation 在 2024 年报告了清晰的 scaling law 曲线（3M/10M/100M 参数，loss 随 FLOPs 幂律下降）；但 2026 年的系统研究在「下游任务」上找不到同样的规律：性能在 1%–10% 数据即饱和，且简单基线常常追平。<sup class="ref"><a href="#r4">[4]</a><a href="#r15">[15]</a></sup></p>
+  <p>这两个结论并不矛盾：<strong>预训练损失可以 scaling，但下游任务的「生物学信号」未必随规模线性增长</strong>。当某类任务（如双扰动交互）本身只有 4.2% 的真实信号时，再大的模型也只能拟合噪声。这是「数据墙」的真正含义。</p>
+
+  <h3>8.4 一个平衡的判断</h3>
+  <div class="quote">
+    <p><b>scFM 不是「无用」，而是「被误用」。</b>把它当成开箱即用的通用智能，会失望；把它当成<strong>高质量的表征初始化 + 迁移学习起点 + 跨数据集坐标系</strong>，它已经在多个场景证明价值。真正的分水岭不是「参数多大」，而是「有没有<strong>域匹配的数据 + 可靠的基线 + 湿实验验证</strong>」。</p>
+  </div>
+
+  <h3>8.5 给读者的一份「八问清单」</h3>
+  <div class="card">
+    <ol>
+      <li><strong>任务是什么？</strong>注释、整合、扰动、生成——不同任务的最优模型完全不同。</li>
+      <li><strong>有没有强基线？</strong>HVG、Harmony、scVI、逻辑回归、additive——先跑基线，再谈 scFM。</li>
+      <li><strong>评估数据在预训练集里吗？</strong>查时间切分、查细胞重叠、查作者是否公开训练清单。</li>
+      <li><strong>是零样本还是微调？</strong>两者要分开报告；零样本差不代表微调差。</li>
+      <li><strong>指标对生物学有意义吗？</strong>macro-F1、per-class recall、DEG 重叠、Pearson delta，比总体 accuracy 更可信。</li>
+      <li><strong>稀有类表现如何？</strong>要求 per-class 结果，不只看总体。</li>
+      <li><strong>许可允许商用吗？</strong>代码许可 ≠ 权重许可 ≠ 论文许可。</li>
+      <li><strong>能不能复现？</strong>有没有种子、超参、算力、失败案例的披露。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 9 展望 ============ -->
+<section id="s9">
+  <h2><span class="no">09</span>趋势展望：2026–2028 的五条主线</h2>
+  <p class="lede">下面的判断不是「预测某个模型会赢」，而是判断「哪些条件一旦成立，格局会变」。每条都给出可观察的信号。</p>
+
+  <h3>9.1 数据层：观测数据接近饱和，扰动数据决定上限</h3>
+  <p>公开的观测性 atlas 已经达到亿级（CELLxGENE、HCA、Arc VCA），继续堆观测数据的边际收益在下降；真正稀缺的是<strong>同一细胞类型、同一平台、带对照的扰动数据</strong>。Tahoe-100M（1 亿细胞、6 万药物—细胞相互作用）之所以重要，不是因为大，而是因为它把「药物 × 细胞系」变成了可训练的因果矩阵。<sup class="ref"><a href="#r13">[13]</a></sup></p>
+  <p><strong>可观察信号：</strong>① 扰动数据成本是否降到「每细胞美分」量级；② 是否出现跨实验室的扰动数据标准（类似 scBaseCount 的元数据 schema）；③ 药企是否愿意把内部 Perturb-seq 数据拿出来换模型。</p>
+
+  <h3>9.2 模型层：「通用底座 + 领域适配器」会成为主流</h3>
+  <p>2026 年的架构爆炸（diffusion、JEPA、flow matching、Mamba）不会产生一个「唯一正确」的主干。更可能的格局是：</p>
+  <ul>
+    <li><strong>通用表征底座</strong>（UCE、TranscriptFormer、SCimilarity）：负责跨物种、跨平台的坐标系；</li>
+    <li><strong>生成/模拟器</strong>（Lingshu-Cell、AlphaCell、State）：负责扰动响应与状态转移；</li>
+    <li><strong>领域适配器</strong>（LoRA、蒸馏、轻量版）：负责具体组织、具体模态、具体药企场景；</li>
+    <li><strong>文本接口</strong>（CellWhisperer、CellHermes）：负责自然语言查询与可解释输出。</li>
+  </ul>
+  <p><strong>可观察信号：</strong>是否出现「模型卡 + 适配器市场」；是否出现类似 HuggingFace 的单细胞模型托管标准；是否出现跨模型的统一 tokenization。</p>
+
+  <h3>9.3 评测层：从「排行榜」到「生物学有效性」</h3>
+  <p>2025–2026 年的基准论文已经把问题说透：没有统一评测，就没有可比较的进步。接下来的演化方向是：</p>
+  <ul>
+    <li><strong>任务标准化</strong>：VCC 用「能否替代一次 Perturb-seq」定义任务；Cell_Eval 用 7 项指标覆盖 DES/PDS/MAE/Pearson/Spearman/AUPRC。</li>
+    <li><strong>防泄漏</strong>：时间切分、逐细胞去重、公开训练清单、成员推断审计。</li>
+    <li><strong>生物学指标</strong>：DEG 重叠、通路富集、稀有类召回，而不是单一 MSE。</li>
+    <li><strong>动态榜单</strong>：模型提交—盲测—复现的持续评估，而不是论文里的「一次性 SOTA」。</li>
+  </ul>
+  <p><strong>可观察信号：</strong>VCC 是否成为年度惯例；是否有期刊要求提交「基准报告」；是否有第三方审计机构出现。</p>
+
+  <h3>9.4 产业层：平台化、监管与「in silico evidence」</h3>
+  <p>短期（2026–2027）最现实的商业模式不是「卖模型」，而是三种：① <strong>平台订阅/API</strong>（BioMap、CZI VCP、NVIDIA BioNeMo）；② <strong>联合研发</strong>（药企出数据和场景，模型方出方法和算力）；③ <strong>管线资产</strong>（用虚拟细胞筛靶点，再把候选推进临床）。</p>
+  <p>监管侧，美国 FDA 于 2025-01-06 发布首份 AI 药物开发草案指南，提出基于风险的「可信度（credibility）」框架，并披露 2016 年以来已收到 500+ 含 AI 成分的申报；但全文并未专门提及「虚拟细胞」。欧洲、中国对 AI 辅助药物研发的鼓励，为「计算证据」进入审评提供了政策窗口；不过「虚拟细胞预测」目前还不能替代动物实验或临床试验，只能作为<strong>假设生成与优先级排序</strong>工具。<sup class="ref"><a href="#r46">[46]</a><a href="#r28">[28]</a></sup></p>
+  <p>目前公开的落地案例，几乎都是「模型提假设 → 湿实验验证」的混合证据链：Google C2S-Scale 预测 silmitasertib + 干扰素并被活细胞实验验证；Genentech SCimilarity 的查询命中被 3D 水凝胶体系复现；Recursion 的 Phenom 模型通过 BioNeMo 对外托管。尚无公开的「虚拟细胞模型直接支撑 FDA 申报」案例。<sup class="ref"><a href="#r44">[44]</a><a href="#r9">[9]</a><a href="#r43">[43]</a></sup></p>
+
+  <h3>9.5 中国：算力自主、许可治理、数据联盟</h3>
+  <ul>
+    <li><strong>算力自主</strong>：CellFM 在 MindSpore + 昇腾 910 上完成 8 亿参数训练，证明了「非 NVIDIA 栈」的可行性；这会推动更多国内团队做类似尝试。<sup class="ref"><a href="#r6">[6]</a></sup></li>
+    <li><strong>许可治理</strong>：目前中国团队的许可高度分裂（Apache-2.0 / GPL-3.0 / CC BY-NC-ND / 无 LICENSE）。如果要产业化，<strong>商用许可的清晰化</strong>比再发一个更大的模型更重要。</li>
+    <li><strong>数据联盟</strong>：华大联合 18 家机构发起「10 Billion Cells Alliance」，建设生命/疾病/扰动三大图谱库，明确指向细胞尺度基础模型与虚拟细胞。<sup class="ref"><a href="#r39">[39]</a></sup></li>
+  </ul>
+
+  <h3>9.6 三个可能改变格局的「如果」</h3>
+  <div class="grid g3">
+    <div class="card">
+      <h4>如果扰动数据成本降 10 倍</h4>
+      <p>scaling law 可能在下游任务上重新成立；State/AlphaCell 这类「状态转移」模型会最先受益；纯观测模型的优势会被进一步压缩。</p>
+    </div>
+    <div class="card">
+      <h4>如果监管接受 in silico 证据</h4>
+      <p>虚拟细胞从「研究工具」变成「审评材料」，药企付费意愿会显著上升；但前提是可解释性、可复现性与验证协议先到位。</p>
+    </div>
+    <div class="card">
+      <h4>如果多模态统一图谱出现</h4>
+      <p>RNA + 蛋白 + 空间 + 扰动在同一坐标系里对齐，会出现真正的「细胞世界模型」；单模态模型的竞争壁垒将大幅下降。</p>
+    </div>
+  </div>
+
+  <div class="callout c-info">
+    <div class="t">ℹ 一个谨慎的时间判断</div>
+    <p>2026–2027：评测标准化、许可分层、VCC 常态化；2027–2028：出现「虚拟细胞辅助」的临床前候选药物（仍以动物实验为准）；2028 之后：通用虚拟细胞仍是长期目标，短期不要期待「替代湿实验」。<strong>以上为基于当前证据的推测，不是承诺。</strong></p>
+  </div>
+</section>
+
+<!-- ============ 10 建议 ============ -->
+<section id="s10">
+  <h2><span class="no">10</span>选型与行动建议</h2>
+  <p class="lede">这一章是「怎么用」，不是「哪个最好」。不同任务的最优解差异极大，下面给出一个从任务出发的选型矩阵。</p>
+
+  <h3>10.1 按任务的选型矩阵</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>任务</th><th>推荐起点</th><th>备选</th><th>关键提醒</th></tr></thead>
+      <tbody>
+        <tr><td class="name">细胞类型注释</td><td>CellFM / scGPT 微调</td><td>CellTypist、逻辑回归、scBERT</td><td>先跑基线；报告 macro-F1 与 per-class recall；注意标记基因覆盖</td></tr>
+        <tr><td class="name">批次整合</td><td>Harmony / scVI 基线</td><td>scGPT、Geneformer</td><td>先证明「不输基线」；用 iLISI + 生物保守性双指标</td></tr>
+        <tr><td class="name">跨物种 / 跨平台</td><td>UCE、TranscriptFormer</td><td>GeneCompass</td><td>检查物种与组织覆盖；零样本可先用，别急着微调</td></tr>
+        <tr><td class="name">扰动预测</td><td>State、scFoundation</td><td>GEARS、线性/additive 基线</td><td>必须报告 DES/PDS/MAE；注意训练集与测试集的扰动重叠</td></tr>
+        <tr><td class="name">药物响应</td><td>scFoundation / xTrimoGene</td><td>领域专用的药敏模型</td><td>细胞系与药物拆分要严格；警惕数据泄漏</td></tr>
+        <tr><td class="name">空间转录组</td><td>Nicheformer、CellPLM</td><td>Novae、scGPT-spatial</td><td>组织结构指标（邻域一致性）比细胞身份更重要</td></tr>
+        <tr><td class="name">细胞检索</td><td>SCimilarity</td><td>UCE</td><td>嵌入稳定性与跨研究可比性；先做小规模验证</td></tr>
+        <tr><td class="name">基因功能 / GRN</td><td>Geneformer（微调）</td><td>GeneCompass、scGPT</td><td>注意力≠调控；必须用扰动或已知数据库交叉验证</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>10.2 给研究团队</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4>做对的五件事</h4>
+      <ol>
+        <li><strong>先定义任务与基线</strong>：HVG、Harmony、scVI、逻辑回归、additive——基线跑不过，不要上大模型。</li>
+        <li><strong>把「零样本」与「微调」分开报告</strong>：两者的结论经常相反。</li>
+        <li><strong>做数据审计</strong>：时间切分、去重、检查预训练集是否包含测试集。</li>
+        <li><strong>报告失败案例</strong>：稀有类、分布外、跨平台的表现，比平均分更有信息量。</li>
+        <li><strong>公开超参与算力</strong>：种子、学习率、batch size、GPU 时——这是可复现的前提。</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4>常见的五个坑</h4>
+      <ol>
+        <li>把「预训练 loss 下降」当成「下游能力提升」。</li>
+        <li>用总体 accuracy 掩盖稀有类失败。</li>
+        <li>在预训练数据上做「零样本」评测。</li>
+        <li>忽略许可，把 CC BY-NC-ND 的模型用于商业产品。</li>
+        <li>用 MSE 选模型，却在论文里讲生物学故事。</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>10.3 给企业与投资人</h3>
+  <ul>
+    <li><strong>不要自建通用大模型</strong>：除非你有亿级细胞和千卡算力，否则「开源底座 + 领域微调 + 专有数据」是更优解。</li>
+    <li><strong>看数据闭环，不看参数量</strong>：能持续产生扰动数据、能把湿实验接回训练回路的团队，比「参数最大」的团队更有长期价值。</li>
+    <li><strong>把许可当尽职调查项</strong>：代码许可、权重许可、论文许可、数据许可，四者可能不一致。</li>
+    <li><strong>用第三方基准做验收</strong>：VCC、Cell_Eval、scEval、SCMBench 的成绩，比厂商自测更可信。</li>
+    <li><strong>警惕「最大」「首个」「SOTA」</strong>：这三个词在 2025–2026 年的单细胞赛道出现频率极高，但很少附带可比条件。</li>
+  </ul>
+
+  <h3>10.4 给政策与联盟</h3>
+  <ul>
+    <li><strong>建公共扰动数据基础设施</strong>：比资助「再训练一个模型」更能提升国家竞争力。</li>
+    <li><strong>推动评测标准与数据审计</strong>：资助第三方基准、要求公开训练清单、建立模型卡规范。</li>
+    <li><strong>明确商用许可与合规边界</strong>：尤其是医疗场景下的数据隐私、模型责任与可解释性要求。</li>
+    <li><strong>支持国产算力栈</strong>：MindSpore/昇腾的案例证明可行，但需要更多模型与工具链适配。</li>
+  </ul>
+</section>
+
+<!-- ============ 方法与局限 ============ -->
+<section id="method">
+  <h2><span class="no">A</span>方法与局限</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h4>资料范围</h4>
+      <p>截至 2026-10-21。来源包括：Nature / Nature Methods / Nature Communications / Nature Machine Intelligence / Cell / Cell Research / Genome Biology / Advanced Science / Nucleic Acids Research 等期刊页；bioRxiv、arXiv、ACL Anthology、ICML/PMLR 预印本与会议页；Arc Institute、CZI、NVIDIA、BioMap、华大等机构官网与模型卡；GitHub 仓库与 HuggingFace 模型页（部分网络受限，未能直接打开）。</p>
+      <p class="small">检索关键词：single-cell foundation model、scFM、virtual cell、perturbation prediction、scGPT、Geneformer、scFoundation、CellFM、State、Tahoe-100M、Cell_Eval、zero-shot benchmark；中文侧：单细胞大模型、虚拟细胞、扰动预测、细胞图谱。</p>
+    </div>
+    <div class="card">
+      <h4>已知局限</h4>
+      <ul>
+        <li>部分论文（Nature 系、Cell 系）只能读到摘要或新闻稿，方法细节未逐条核对。</li>
+        <li>厂商宣称的数字（CellOS 12B、3.905 亿细胞、Pearson_edist 0.619）未独立复现，正文已标注。</li>
+        <li>不同论文的细胞计数口径不同（是否去重、是否质控、是否含鼠/多物种），跨行比较仅作数量级参考。</li>
+        <li>中国企业的融资、管线信息多来自媒体转述，缺少港交所/公司公告级一手文件。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>三处需要纠正的流传说法</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>流传说法</th><th>核查结果</th><th>一手来源</th></tr></thead>
+      <tbody>
+        <tr><td>「华大 GeneCompass」</td><td>GeneCompass 作者单位均为中科院系统（动物所、计算所、自动化所、网络信息中心）+ X-Compass 联盟，论文与 GitHub 均无 BGI 署名</td><td><a href="#r7">[7]</a></td></tr>
+        <tr><td>「GeneCompass 12 亿参数」</td><td>原文为 12 层/12 头/768 维，「总参数超过 1 亿」，不是 12 亿</td><td><a href="#r7">[7]</a></td></tr>
+        <tr><td>「CellWhisperer 是中国团队」</td><td>作者全部为奥地利 CeMM/维也纳医科大学，通讯作者 Christoph Bock</td><td>Nat Biotechnol 2025, DOI 10.1038/s41587-025-02857-9</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 附录 ============ -->
+<section id="appendix">
+  <h2><span class="no">B</span>附录：术语表与开源资源</h2>
+
+  <h3>B.1 术语表</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="width:22%">术语</th><th>含义（在本报告语境下）</th></tr></thead>
+      <tbody>
+        <tr><td class="name">scFM</td><td>单细胞基础模型（single-cell foundation model）：在千万到亿级单细胞数据上自监督预训练、可迁移到多任务的模型。</td></tr>
+        <tr><td class="name">Tokenization</td><td>把细胞的基因表达向量转成模型可处理的 token 序列的方式；常见有排名、分箱、连续投影、基因名文本、表达感知注意力。</td></tr>
+        <tr><td class="name">零样本（zero-shot）</td><td>不针对下游任务微调，直接用预训练模型的嵌入或生成能力做预测。</td></tr>
+        <tr><td class="name">微调 / LoRA</td><td>在预训练模型上用小规模任务数据更新参数；LoRA 只训练低秩适配器，大幅降低算力。</td></tr>
+        <tr><td class="name">Perturb-seq</td><td>把 CRISPR 扰动与单细胞转录组测序结合，读出「 perturbation → 表达变化」的高通量实验。</td></tr>
+        <tr><td class="name">AIVC</td><td>AI 虚拟细胞（AI virtual cell）：能表征、预测、模拟细胞状态与扰动响应的计算模型。</td></tr>
+        <tr><td class="name">GRN</td><td>基因调控网络（gene regulatory network）：基因之间的调控关系图。</td></tr>
+        <tr><td class="name">MoE</td><td>混合专家（mixture of experts）：用多个「专家」子网络稀疏激活，扩大参数量而控制推理成本。</td></tr>
+        <tr><td class="name">JEPA</td><td>联合嵌入预测架构（joint-embedding predictive architecture）：在隐空间预测另一视角/另一状态，而不是重建输入。</td></tr>
+        <tr><td class="name">流匹配 / OT-CFM</td><td>学习从初始分布到目标分布的连续变换；OT-CFM 用最优传输构造条件流，常用于扰动后的状态演化建模。</td></tr>
+        <tr><td class="name">离散扩散</td><td>在离散 token 空间上做「加噪—去噪」的生成模型，适合稀疏、非序列的转录组计数。</td></tr>
+        <tr><td class="name">ASW / AvgBIO</td><td>平均轮廓系数（聚类分离度）/ 平均生物保守性分数，常用于细胞嵌入评测。</td></tr>
+        <tr><td class="name">PDS / DES</td><td>扰动区分度分数 / 差异表达分数，VCC 与 Cell_Eval 的核心指标。</td></tr>
+        <tr><td class="name">数据泄漏 / 双重 dipping</td><td>预训练语料包含评测细胞，导致零样本成绩虚高；同一批细胞既塑造表征又充当测试集。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>B.2 主要开源资源</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>模型 / 工具</th><th>仓库或模型页</th><th>许可 / 备注</th></tr></thead>
+      <tbody>
+        <tr><td class="name">scGPT</td><td>github.com/bowang-lab/scGPT</td><td>MIT；CZI VCP 有模型卡</td></tr>
+        <tr><td class="name">Geneformer</td><td>huggingface.co/ctheodoris/Geneformer</td><td>代码/权重许可需逐版本核对</td></tr>
+        <tr><td class="name">scFoundation</td><td>github.com/biomap-research/scFoundation</td><td>Apache-2.0</td></tr>
+        <tr><td class="name">CellFM</td><td>github.com/biomed-AI/CellFM</td><td>标注 Other；论文 CC BY-NC-ND</td></tr>
+        <tr><td class="name">GeneCompass</td><td>github.com/xCompass-AI/GeneCompass</td><td>无 LICENSE 文件</td></tr>
+        <tr><td class="name">scBERT</td><td>github.com/TencentAILabHealthcare/scBERT</td><td>GPL-3.0；2023 年底后基本停更</td></tr>
+        <tr><td class="name">SCimilarity</td><td>github.com/Genentech/scimilarity</td><td>开源；Nature 638:1085</td></tr>
+        <tr><td class="name">TranscriptFormer</td><td>github.com/czi-ai/transcriptformer</td><td>MIT</td></tr>
+        <tr><td class="name">UCE</td><td>github.com/snap-stanford/UCE</td><td>开源；Nature 2026</td></tr>
+        <tr><td class="name">Cell_Eval</td><td>github.com/ArcInstitute/cell-eval</td><td>评测框架</td></tr>
+        <tr><td class="name">CellPLM</td><td>github.com/OmicsML/CellPLM</td><td>ICLR 2024</td></tr>
+        <tr><td class="name">Nicheformer</td><td>github.com/theislab/nicheformer</td><td>Nat Methods 2025</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">以上链接为公开仓库/模型页；如遇 404，请在论文的 Data/Code Availability 段落查找最新地址。本报告未对每个仓库的可用性做逐一运行验证。</p>
+</section>
+
+<!-- ============ 参考 ============ -->
+<section id="refs">
+  <h2><span class="no">R</span>参考文献</h2>
+  <p class="lede">按正文引用顺序编号。链接为公开可访问的一手页面；付费墙论文同时给出 DOI 或预印本。</p>
+  <ol class="refs">
+    <li id="r1">Baek S, Song K, Lee I. Single-cell foundation models: bringing artificial intelligence into cell biology. <em>Exp Mol Med</em> 57:2169–2181 (2025). <span class="u">https://www.nature.com/articles/s12276-025-01547-5</span></li>
+    <li id="r2">Theodoris CV, Xiao L, Chopra A, et al. Transfer learning enables predictions in network biology. <em>Nature</em> 618:616–624 (2023). <span class="u">https://www.nature.com/articles/s41586-023-06139-9</span></li>
+    <li id="r3">Wang H, Zhao J, Su Y, et al. scGPT: toward building a foundation model for single-cell multi-omics using generative AI. <em>Nat Methods</em> 21:1470–1480 (2024). <span class="u">https://www.nature.com/articles/s41592-024-02201-0</span>；模型卡 <span class="u">https://virtualcellmodels.cziscience.com/model/scgpt</span></li>
+    <li id="r4">Hao M, Gong J, Zeng X, et al. Large-scale foundation model on single-cell transcriptomics (scFoundation). <em>Nat Methods</em> (2024). <span class="u">https://www.nature.com/articles/s41592-024-02305-7</span>；预印本 <span class="u">https://www.biorxiv.org/content/10.1101/2023.05.29.542705v1.full</span></li>
+    <li id="r5">Yang F, Wang W, Wang F, et al. scBERT as a large-scale pretrained deep language model for cell type annotation of single-cell RNA-seq data. <em>Nat Mach Intell</em> 4:852–866 (2022). <span class="u">https://doi.org/10.1038/s42256-022-00534-z</span>；预印本 <span class="u">https://www.biorxiv.org/content/10.1101/2021.12.05.471261v3.full</span></li>
+    <li id="r6">Zeng Y, Xie J, Shangguan N, et al. CellFM: a large-scale foundation model pre-trained on transcriptomics of 100 million human cells. <em>Nat Commun</em> 16:4679 (2025). <span class="u">https://www.nature.com/articles/s41467-025-59926-5</span></li>
+    <li id="r7">Yang X, Liu G, Feng G, et al. GeneCompass: deciphering universal gene regulatory mechanisms with a knowledge-informed cross-species foundation model. <em>Cell Res</em> 34:830–845 (2024). <span class="u">https://www.nature.com/articles/s41422-024-01034-y</span></li>
+    <li id="r8">Rosen Y, Brbić M, Roohani Y, et al. Universal cell embeddings (UCE): a foundation model for cell biology. <em>Nature</em> (2026). <span class="u">https://www.nature.com/articles/s41586-026-10689-z</span></li>
+    <li id="r9">Heimberg G, Kuo T, DePianto DJ, et al. A cell atlas foundation model for scalable search of similar human cells (SCimilarity). <em>Nature</em> 638:1085–1094 (2025; online 2024-11-20). <span class="u">https://www.nature.com/articles/s41586-024-08411-y</span></li>
+    <li id="r10">Pearce JD, Simmonds SE, Mahmoudabadi G, et al. A cross-species generative cell atlas across 1.5 billion years of evolution: the TranscriptFormer single-cell model. <em>bioRxiv</em> (2025)；正式版 <em>Science</em> (2026-07-02), DOI 10.1126/science.aec8514. <span class="u">https://doi.org/10.1101/2025.04.25.650731</span>；模型卡 <span class="u">https://virtualcellmodels.cziscience.com/model/transcriptformer</span></li>
+    <li id="r11">Arc Institute. Arc Institute’s first virtual cell model: State. 2025-06-23. <span class="u">https://arcinstitute.org/news/virtual-cell-model-state</span>；正式版 <em>Cell</em> (2026-08-31), DOI 10.1016/j.cell.2026.07.052</li>
+    <li id="r12">Arc Institute. Virtual Cell Challenge 2025 Wrap-Up: Winners and Reflections. 2025-12-06. <span class="u">https://arcinstitute.org/news/virtual-cell-challenge-2025-wrap-up</span></li>
+    <li id="r13">Arc Institute / Tahoe. Tahoe Open Sources Tahoe-100M… 2025-02-25. <span class="u">https://arcinstitute.org/news/arc-vevo</span></li>
+    <li id="r14">Bunne C, Roohani Y, Rosen Y, et al. How to build the virtual cell with artificial intelligence: priorities and opportunities. <em>Cell</em> (2024). <span class="u">https://doi.org/10.1016/j.cell.2024.11.015</span>；新闻稿 <span class="u">https://www.eurekalert.org/news-releases/1068117</span></li>
+    <li id="r15">DenAdel A, Hughes M, Thoutam A, et al. Evaluating the role of pretraining dataset size and diversity on single-cell foundation model performance. <em>Nat Methods</em> (2026). <span class="u">https://www.nature.com/articles/s41592-026-03120-y</span></li>
+    <li id="r16">Liu T, Li K, Wang Y, Li H, Zhao H. Evaluating the utilities of foundation models in single-cell data analysis (scEval). <em>Adv Sci</em> 13(27):e14490 (2026). <span class="u">https://doi.org/10.1002/advs.202514490</span>；预印本 <span class="u">https://www.biorxiv.org/content/10.1101/2023.09.08.555192v6.full</span></li>
+    <li id="r17">Kedzierska KZ, Crawford L, Amini AP, Lu AX. Zero-shot evaluation reveals limitations of single-cell foundation models. <em>Genome Biol</em> 26:101 (2025). <span class="u">https://doi.org/10.1186/s13059-025-03574-x</span></li>
+    <li id="r18">Ahlmann-Eltze C, Huber W, Anders S. Deep-learning-based gene perturbation effect prediction does not yet outperform simple linear baselines. <em>Nat Methods</em> (2025). <span class="u">https://doi.org/10.1038/s41592-025-02772-6</span></li>
+    <li id="r19">Boiarsky R, Singh N, Buendia A, Getz G, Sontag D. Deeper evaluation of a single-cell foundation model. <em>Nat Mach Intell</em> (2024). <span class="u">https://doi.org/10.1038/s42256-024-00949-w</span></li>
+    <li id="r20">Wu J, Ye Q, Wang Y, et al. Biology-driven insights into the power of single-cell foundation models. <em>Genome Biol</em> (2025). <span class="u">https://doi.org/10.1186/s13059-025-03781-6</span></li>
+    <li id="r21">Ali S. Auditing pretraining contamination in single-cell foundation model benchmarks. <em>arXiv</em>:2607.20572 (2026). <span class="u">https://arxiv.org/abs/2607.20572</span></li>
+    <li id="r22">Wenteler A, Occhetta M, Branson N, et al. PertEval-scFM: benchmarking single-cell foundation models for perturbation effect prediction. <em>ICML</em> 2025, PMLR 267:66633–66677. <span class="u">https://proceedings.mlr.press/v267/wenteler25a.html</span></li>
+    <li id="r23">Dong Z, Zhong J. Rethinking class imbalance for single-cell foundation models. <em>arXiv</em>:2609.23325 (2026). <span class="u">https://arxiv.org/abs/2609.23325</span></li>
+    <li id="r24">Chen S, Zahedi R, Chhuo L, et al. Harmonised benchmarking of foundation models for single-cell and spatial transcriptomics reveals context-dependent generalisation. <em>arXiv</em>:2607.17227 (2026). <span class="u">https://arxiv.org/abs/2607.17227</span></li>
+    <li id="r25">Wang Y, Fan Y, Wang X, et al. SCMBench: benchmarking domain-specific and foundation models for single-cell multi-omics data integration. <em>Nat Commun</em> (2026). <span class="u">https://www.nature.com/articles/s41467-026-72570-x</span></li>
+    <li id="r26">Ji B, Hu T, Wang J, et al. CAPTAIN: a multimodal foundation model pretrained on co-assayed single-cell RNA and protein. <em>Nat Commun</em> (2026). <span class="u">https://www.nature.com/articles/s41467-026-72882-y</span></li>
+    <li id="r27">Zhang H, Yuan G-H, Yuan C, et al. Lingshu-Cell: a generative cellular world model for transcriptome modeling toward virtual cells. <em>arXiv</em>:2603.25240 (2026). <span class="u">https://arxiv.org/abs/2603.25240</span></li>
+    <li id="r28">量子位. 从 LLM 到 JEPA，中国团队正在把「世界模型」搬进细胞内部（CellOS 发布报道）. 2026-07-03. <span class="u">https://www.qbitai.com/2026/07/442746.html</span>；动脉网专访. 2026-07-04. <span class="u">https://www.phirda.com/artilce_43055.html</span></li>
+    <li id="r29">Chuai G, Chen X, Yang X, et al. Towards building a world model to simulate perturbation-induced cellular dynamics by AlphaCell. <em>bioRxiv</em> (2026). <span class="u">https://doi.org/10.1101/2026.03.02.709176</span>；中文报道 <span class="u">https://m.163.com/dy/article/KNOPN27O05119734.html</span></li>
+    <li id="r30">scDifformer: a pretraining–diffusion post-training–fine-tuning paradigm for virtual cell modeling. <em>Nucleic Acids Res</em> (2026). <span class="u">https://doi.org/10.1093/nar/gkag706</span></li>
+    <li id="r31">Zhang F, Chen H, Zhu Z, et al. A survey on foundation language models for single-cell biology. <em>ACL</em> 2025 (Long Papers), pp. 528–549. <span class="u">https://aclanthology.org/2025.acl-long.26.pdf</span></li>
+    <li id="r32">Chan Zuckerberg Initiative. Virtual Cells Platform: models, benchmarks and data. <span class="u">https://virtualcellmodels.cziscience.com/</span></li>
+    <li id="r33">NVIDIA. BioNeMo Framework: Geneformer model card &amp; recipes. <span class="u">https://docs.nvidia.com/bionemo-framework/latest/models/geneformer/</span></li>
+    <li id="r34">Regev A, Teichmann SA, Lander ES, et al. The Human Cell Atlas. <em>eLife</em> 6:e27041 (2017). <span class="u">https://doi.org/10.7554/eLife.27041</span></li>
+    <li id="r35">Levine D, Rizvi SR, Lévy S, et al. Cell2Sentence: teaching large language models the language of biology. <em>bioRxiv</em> (2023). <span class="u">https://doi.org/10.1101/2023.09.11.557287</span></li>
+    <li id="r36">Chen Y, Zou J. GenePT: a simple but effective foundation model for genes and cells built from ChatGPT. <em>bioRxiv</em> (2023). <span class="u">https://doi.org/10.1101/2023.10.16.562533</span></li>
+    <li id="r37">Schaar AC, Todorov H, et al. Nicheformer: a foundation model for single-cell and spatial omics. <em>Nat Methods</em> (2025). <span class="u">https://www.nature.com/articles/s41592-025-02814-z</span></li>
+    <li id="r38">Wen H, Tang W, Dai X, et al. CellPLM: pre-training of cell language model beyond single cells. <em>ICLR</em> 2024. <span class="u">https://proceedings.iclr.cc/paper_files/paper/2024/hash/173bcdbd820edbe43284e0941109ada9-Abstract-Conference.html</span></li>
+    <li id="r39">BGI. Stereo-cell and the 10 Billion Cells Alliance. 2025-08-22. <span class="u">https://en.genomics.cn/scientificdiscoverie-7179.html</span></li>
+    <li id="r40">BGI Group. 2025 milestones: Genos genome foundation model. <span class="u">https://en.genomics.cn/bgigroupmilestones2025.html</span></li>
+    <li id="r41">Arc Institute. State 正式版：Predicting cellular responses to perturbation. <em>Cell</em> (2026-08-31). DOI 10.1016/j.cell.2026.07.052；Stack 预印本 2026-01-09, bioRxiv 10.64898/2026.01.09.698608；<span class="u">https://arcinstitute.org/tools/stack</span></li>
+    <li id="r42">Chan Zuckerberg Initiative. CZI and NVIDIA expand partnership for virtual cell models. 2025-10-28. <span class="u">https://chanzuckerberg.com/newsroom/nvidia-partnership-virtual-cell-model/</span></li>
+    <li id="r43">Genentech. BRAID: Biology Research | AI Development. <span class="u">https://www.gene.com/scientists/our-scientists/braid</span></li>
+    <li id="r44">Google. C2S-Scale 27B: AI co-scientist for cancer therapy discovery. 2025-10-15. <span class="u">https://blog.google/innovation-and-ai/products/google-gemma-ai-cancer-therapy-discovery/</span></li>
+    <li id="r45">GitHub / HuggingFace 镜像数据（2026-10-21）：scGPT repo stars、Geneformer 近 30 天下载与 likes。原始页面：<span class="u">https://github.com/bowang-lab/scGPT</span>；<span class="u">https://hf-mirror.com/api/models?search=Geneformer</span></li>
+    <li id="r46">U.S. FDA. Framework to advance credibility of AI models used in drug and biological product submissions (draft guidance). 2025-01-06. <span class="u">https://www.fda.gov/news-events/press-announcements/fda-proposes-framework-advance-credibility-ai-models-used-drug-and-biological-product-submissions</span></li>
+    <li id="r47">Bommasani R, Hudson DA, Adeli E, et al. On the opportunities and risks of foundation models. <em>arXiv</em>:2108.07258 (2021). <span class="u">https://arxiv.org/abs/2108.07258</span></li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="inner">
+    <p><strong>单细胞基础模型（scFM）发展调研报告</strong> · v1.0 · 2026-10-21</p>
+    <p>本报告基于公开资料整理，旨在提供研究地图与判断框架，不构成投资或医疗建议。厂商宣称的数据均已标注；引用请以原始论文/官方页面为准。</p>
+    <p>报告结构：摘要 · 定义 · 起源 · 技术版图 · 模型全景 · 重点方向 · 产业生态 · 痛点 · 争议 · 展望 · 建议 · 方法 · 参考文献</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max * 100 : 0;
+    bar.style.width = p + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.top a[href^="#"]'));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  function spy(){
+    var y = window.scrollY + 120;
+    var idx = 0;
+    for (var i=0;i<targets.length;i++){ if (targets[i].offsetTop <= y) idx = i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===idx); });
+  }
+  document.addEventListener('scroll', spy, {passive:true});
+  spy();
+})();
+</script>
+</body>
+</html>

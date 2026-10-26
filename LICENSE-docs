@@ -1,0 +1,23 @@
+文字、图表与文档许可
+====================
+
+除 src/ 目录下的代码外，本仓库的内容——包括 docs/ 下的报告、汇报稿与交互页，
+figs/ 下的图，notes/ 下的笔记，literature/ 下的报告与清单——采用
+Creative Commons Attribution 4.0 International（CC BY 4.0）许可。
+
+你可以自由地共享和改编这些内容，包括商业用途，条件是署名。
+
+推荐的署名格式：
+
+  单细胞大模型调研（2026），sleepSleepsleep-lab，
+  https://github.com/sleepSleepsleep-lab/single-cell-foundation-models-survey
+
+许可全文：https://creativecommons.org/licenses/by/4.0/legalcode
+许可摘要：https://creativecommons.org/licenses/by/4.0/
+
+说明
+----
+
+本许可只覆盖本仓库作者自己撰写的部分。仓库中引用的论文、模型、商标与
+数据集的版权归各自权利人所有，引用不构成对其的再许可。报告中的数据与
+结论来自公开文献，转引时请回到原始出处核对。

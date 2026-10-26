@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>单细胞大模型：12 个问题，6 类做法，27 个模型</title>
+<style>
+:root{
+  --paper:#fbfaf7; --panel:#ffffff; --ink:#1e2a36; --muted:#5d6b7a;
+  --faint:#8a94a6; --line:#dde3ea; --line2:#eceff3;
+  --navy:#1f3a5f; --blue:#2e5c8a; --amber:#b9762f; --brick:#a5484a;
+  --sage:#5b7f5e; --plum:#6b4c7a;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",sans-serif;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{max-width:100%; overflow-x:hidden}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font:15px/1.75 var(--sans); -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:#f0e2cc}
+a{color:var(--navy); text-decoration:none; border-bottom:1px solid #c9d3df}
+a:hover{border-bottom-color:var(--navy)}
+button{font:inherit; color:inherit; background:none; border:0; cursor:pointer}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--amber); outline-offset:3px}
+.wrap{max-width:1160px; margin:0 auto; padding:0 28px}
+
+/* header */
+header.top{
+  position:sticky; top:0; z-index:50; background:rgba(251,250,247,.94);
+  backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
+}
+.top .wrap{height:58px; display:flex; align-items:center; gap:28px; min-width:0}
+.brand{font:600 13px/1 var(--sans); letter-spacing:.08em; color:var(--navy); white-space:nowrap; flex:none}
+.brand span{color:var(--faint); font-weight:400; margin-left:6px}
+nav.main{display:flex; gap:22px; margin-left:auto; overflow:auto; min-width:0; flex:1 1 auto; justify-content:flex-end}
+nav.main a{
+  border:0; font-size:13px; color:var(--muted); padding:4px 0; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:color .15s,border-color .15s;
+}
+nav.main a:hover{color:var(--ink)}
+nav.main a.on{color:var(--navy); border-bottom-color:var(--amber)}
+.ver{font:11px/1 var(--mono); color:var(--faint); letter-spacing:.04em; white-space:nowrap}
+.jump{display:none; margin-left:auto; border:1px solid var(--line); background:#fff; color:var(--muted); font:12px var(--sans); padding:5px 6px}
+#progress{position:absolute; left:0; bottom:-1px; height:2px; width:0; background:var(--amber); transition:width .1s linear}
+
+/* hero */
+.hero{padding:76px 0 40px; border-bottom:1px solid var(--line)}
+.kicker{font:600 11px/1 var(--sans); letter-spacing:.16em; color:var(--amber); text-transform:uppercase}
+h1{
+  font:600 clamp(30px,4.4vw,46px)/1.22 var(--serif); color:var(--navy);
+  margin:16px 0 18px; letter-spacing:-.01em;
+}
+.sub{font-size:17px; color:#3d4b5c; max-width:760px; margin:0 0 14px}
+.sub em{font-style:normal; color:var(--ink); background:linear-gradient(transparent 62%, #f1e3cd 62%)}
+.hero-meta{display:flex; gap:22px; flex-wrap:wrap; font-size:12.5px; color:var(--faint); margin-top:18px}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-top:1px solid var(--ink); margin-top:40px}
+.stat{padding:16px 18px 14px 0; border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block; font:600 28px/1.1 var(--serif); color:var(--navy)}
+.stat span{display:block; margin-top:6px; font-size:12px; color:var(--muted)}
+.reading{display:flex; gap:26px; flex-wrap:wrap; margin-top:26px; font-size:13px; color:var(--muted)}
+.reading b{color:var(--ink); font-weight:600}
+
+/* sections */
+section{padding:64px 0 8px; scroll-margin-top:72px}
+.sec-head{display:flex; align-items:baseline; gap:18px; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:30px}
+.sec-no{font:600 12px/1 var(--mono); color:var(--amber); letter-spacing:.1em}
+.sec-head h2{font:600 27px/1.3 var(--serif); color:var(--navy); margin:0}
+.sec-head p{margin:0 0 0 auto; font-size:13px; color:var(--muted); max-width:500px; text-align:right}
+.intro{max-width:780px; color:#3d4b5c; margin:-6px 0 26px}
+
+/* problems */
+.p-layout{display:grid; grid-template-columns:250px 1fr; gap:38px; align-items:start}
+.p-rail{position:sticky; top:78px}
+.p-group{margin-bottom:16px}
+.p-group h4{font:600 10.5px/1 var(--sans); letter-spacing:.14em; color:var(--faint); margin:0 0 6px; padding-left:10px}
+.p-btn{
+  display:flex; gap:9px; align-items:baseline; width:100%; text-align:left;
+  padding:7px 10px; border-left:2px solid transparent; color:var(--muted);
+  font-size:13.5px; line-height:1.4; transition:background .12s,color .12s;
+}
+.p-btn:hover{background:#f3f4f6; color:var(--ink)}
+.p-btn b{font:600 10.5px/1 var(--mono); color:var(--faint); min-width:22px}
+.p-btn.on{background:#fff; border-left-color:var(--amber); color:var(--navy); box-shadow:0 0 0 1px var(--line)}
+.p-btn.on b{color:var(--amber)}
+.p-panel{min-height:520px; min-width:0}
+.p-top{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px}
+.p-id{font:600 11px/1 var(--mono); color:#fff; background:var(--navy); padding:6px 8px; border-radius:2px; margin-top:5px}
+.p-top h3{font:600 24px/1.35 var(--serif); color:var(--navy); margin:0}
+.p-lead{font-size:15.5px; color:#3d4b5c; margin:10px 0 22px; max-width:760px}
+.p-cols{display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:24px}
+.p-cols h4,.p-sol h4{font:600 11px/1 var(--sans); letter-spacing:.12em; color:var(--faint); margin:0 0 8px}
+.p-cols p{margin:0; font-size:14px; color:#3d4b5c}
+.tbl{width:100%; border-collapse:collapse; font-size:13.2px; line-height:1.55}
+.tbl th{text-align:left; font:600 10.5px/1 var(--sans); letter-spacing:.1em; color:var(--faint); padding:0 12px 8px 0; border-bottom:1px solid var(--ink)}
+.tbl td{padding:9px 12px 9px 0; border-bottom:1px solid var(--line2); vertical-align:top; color:#3d4b5c; word-break:break-word}
+.tbl td:first-child{color:var(--navy); font-weight:600; width:150px}
+.tbl tr:last-child td{border-bottom:1px solid var(--line)}
+.criterion{margin:22px 0 0; padding:14px 16px; background:#f4f1ec; border-left:2px solid var(--amber)}
+.criterion b{display:block; font:600 10.5px/1 var(--sans); letter-spacing:.12em; color:#7a4e50; margin-bottom:6px}
+.criterion p{margin:0; font-size:13.6px; color:#3d4b5c}
+.p-nav{display:flex; justify-content:space-between; margin-top:26px; font-size:12.5px; color:var(--faint)}
+.p-nav button{color:var(--muted); border-bottom:1px solid var(--line)}
+.p-nav button:hover{color:var(--navy); border-bottom-color:var(--navy)}
+
+/* arch */
+.arch-wrap{display:grid; grid-template-columns:1.05fr .95fr; gap:44px; align-items:start; min-width:0}
+.tabs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:22px}
+.tab{
+  padding:7px 12px; border:1px solid var(--line); background:#fff; font-size:12.5px;
+  color:var(--muted); display:flex; gap:7px; align-items:center; transition:.12s;
+}
+.tab i{font:600 10px/1 var(--mono); font-style:normal; color:var(--faint)}
+.tab:hover{border-color:#b9c3cf; color:var(--ink)}
+.tab.on{border-color:var(--ink); color:var(--ink); box-shadow:0 1px 0 var(--ink)}
+.arch-head{display:flex; align-items:baseline; gap:14px; margin-bottom:4px}
+.arch-letter{font:600 54px/1 var(--serif); opacity:.18}
+.arch-head h3{font:600 26px/1.3 var(--serif); margin:0; color:var(--navy)}
+.arch-tag{font-size:13px; color:var(--amber); margin:2px 0 18px}
+.arch-block{border-top:1px solid var(--line); padding:12px 0 2px; display:grid; grid-template-columns:82px 1fr; gap:14px}
+.arch-block + .arch-block{border-top:0}
+.arch-block h5{margin:0; font:600 10.5px/1.7 var(--sans); letter-spacing:.1em; color:var(--faint)}
+.arch-block p{margin:0; font-size:13.8px; color:#3d4b5c}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+.chip{
+  font-size:12px; padding:4px 9px; border:1px solid var(--line); background:#fff; color:var(--navy);
+  transition:.12s;
+}
+.chip:hover{border-color:var(--navy)}
+.map{background:#fff; border:1px solid var(--line); padding:10px 6px 0}
+.map svg{display:block; width:100%; height:auto}
+.map .hint{font-size:12px; color:var(--faint); padding:2px 10px 10px; margin:0}
+
+/* models */
+.toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px}
+.search{flex:1 1 220px; display:flex; align-items:center; border:1px solid var(--line); background:#fff}
+.search input{border:0; outline:0; padding:9px 12px; width:100%; font:13.5px var(--sans); background:transparent; color:var(--ink)}
+.fchip{font-size:12px; border:1px solid var(--line); padding:6px 10px; color:var(--muted); background:#fff}
+.fchip:hover{border-color:#b9c3cf; color:var(--ink)}
+.fchip.on{border-color:var(--ink); color:var(--ink)}
+.count{font:12px var(--mono); color:var(--faint); margin-left:auto}
+.grid-models{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+.card{
+  background:#fff; border:1px solid var(--line); padding:15px 16px 14px; display:flex; flex-direction:column;
+  text-align:left; cursor:pointer; transition:border-color .12s, transform .12s;
+}
+.card:hover{border-color:#aeb9c6; transform:translateY(-1px)}
+.card .kick{display:block; margin:0 0 8px; font-size:11px; color:var(--faint); line-height:1.5; text-align:left}
+.card .kick b{font:600 15px/1.45 var(--sans); color:var(--ink); margin-left:7px}
+.card .kick em{float:right; font:11px var(--mono); color:var(--faint); font-style:normal; line-height:1.9}
+.dot{width:7px; height:7px; border-radius:50%; display:inline-block; vertical-align:1px}
+.card .one{font-size:12.8px; color:var(--muted); line-height:1.6; margin:0 0 14px; text-align:left}
+.card .tags{display:flex; justify-content:flex-start; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:4px}
+.tag{font-size:10.5px; color:var(--faint); border:1px solid var(--line2); padding:2px 6px}
+.empty{padding:40px; text-align:center; color:var(--faint); border:1px dashed var(--line)}
+
+/* modal */
+.modal{position:fixed; inset:0; z-index:100; display:none}
+.modal.open{display:block}
+.backdrop{position:absolute; inset:0; background:rgba(30,42,54,.42)}
+.sheet{
+  position:relative; max-width:720px; margin:6vh auto; background:var(--paper);
+  border:1px solid var(--line); padding:32px 34px; max-height:88vh; overflow:auto;
+  box-shadow:0 18px 50px rgba(30,42,54,.14);
+}
+.sheet:focus{outline:none}
+.sheet .close{position:absolute; right:14px; top:10px; font-size:22px; color:var(--faint); line-height:1}
+.sheet .close:hover{color:var(--ink)}
+.sheet h3{font:600 24px/1.3 var(--serif); color:var(--navy); margin:6px 0 4px}
+.sheet .meta{font-size:12.5px; color:var(--faint); display:flex; gap:14px; flex-wrap:wrap; margin-bottom:18px}
+.sheet .row{border-top:1px solid var(--line); padding:12px 0; display:grid; grid-template-columns:76px 1fr; gap:14px}
+.sheet .row h5{margin:0; font:600 10.5px/1.7 var(--sans); letter-spacing:.1em; color:var(--faint)}
+.sheet .row p{margin:0; font-size:14px; color:#3d4b5c}
+.sheet .verdict{background:#f4f1ec; border-left:2px solid var(--amber); padding:10px 14px; font-size:13.5px; color:#7a4e50; margin-top:14px}
+
+/* matrix */
+.matrix-scroll{overflow-x:auto; padding-bottom:4px}
+.mx{display:grid; grid-template-columns:172px repeat(6,minmax(74px,1fr)); gap:1px; background:var(--line2); border:1px solid var(--line2); min-width:680px}
+.mx .h,.mx .rh{background:var(--paper); padding:8px 8px; font-size:11px; color:var(--faint); display:flex; align-items:center}
+.mx .h{justify-content:center; font:600 10px/1.3 var(--sans); letter-spacing:.06em; text-align:center}
+.mx .rh{justify-content:flex-end; text-align:right; color:var(--muted); font-size:12px}
+.cell{background:#fff; height:38px; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer; transition:outline .1s}
+.cell:hover{outline:1px solid var(--ink); z-index:2}
+.cell .d{width:var(--s,5px); height:var(--s,5px); border-radius:50%; background:#fff}
+.cell[data-v="0"] .d{display:none}
+.cell[data-v="1"] .d{background:#6c7c8c}
+.cell.sel{outline:2px solid var(--amber); z-index:3}
+.legend{display:flex; gap:18px; align-items:center; font-size:12px; color:var(--faint); margin-top:12px; flex-wrap:wrap}
+.legend i{display:inline-block; width:8px; height:8px; border-radius:50%; background:#9db9d1; margin-right:5px}
+.mx-note{margin-top:14px; min-height:44px; font-size:13px; color:#3d4b5c; border-left:2px solid var(--line); padding:2px 0 2px 14px}
+.mx-note b{color:var(--navy)}
+
+/* choose */
+.choose{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:22px}
+.task{
+  border:1px solid var(--line); background:#fff; padding:11px 12px; text-align:left;
+  font-size:13px; color:var(--muted); transition:.12s;
+}
+.task:hover{border-color:#b9c3cf; color:var(--ink)}
+.task.on{border-color:var(--navy); color:var(--navy); box-shadow:inset 0 -2px 0 var(--navy)}
+.result{background:#fff; border:1px solid var(--line); padding:22px 26px; display:grid; grid-template-columns:repeat(4,1fr); gap:22px}
+.result h4{font:600 11px/1 var(--sans); letter-spacing:.12em; color:var(--faint); margin:0 0 6px}
+.result p{margin:0; font-size:13.5px; color:#3d4b5c}
+.result .big{font:600 17px/1.4 var(--serif); color:var(--navy); margin:0}
+.result .note{grid-column:1/-1; border-top:1px solid var(--line2); padding-top:12px; font-size:12.5px; color:var(--muted)}
+
+/* takeaways */
+.take{display:grid; grid-template-columns:1.15fr .85fr; gap:48px}
+.take ol{margin:0; padding:0; list-style:none; counter-reset:t}
+.take li{counter-increment:t; position:relative; padding:14px 0 14px 44px; border-bottom:1px solid var(--line2); font-size:14.5px; color:#3d4b5c}
+.take li::before{content:counter(t,decimal-leading-zero); position:absolute; left:0; top:15px; font:600 11px var(--mono); color:var(--amber)}
+.take li b{display:block; font-weight:600; color:var(--ink); margin-bottom:2px}
+.take .box{border:1px solid var(--line); background:#fff; padding:20px}
+.take .box h4{font:600 11px/1 var(--sans); letter-spacing:.12em; color:var(--faint); margin:0 0 10px}
+.take .box p{margin:0 0 10px; font-size:13.4px; color:#3d4b5c}
+.quote{font:600 19px/1.6 var(--serif); color:var(--navy); margin:26px 0 0; padding-top:20px; border-top:1px solid var(--ink)}
+
+footer{border-top:1px solid var(--line); margin-top:70px; padding:26px 0 60px; font-size:12px; color:var(--faint)}
+footer .wrap{display:flex; gap:24px; flex-wrap:wrap; justify-content:space-between}
+
+@media (max-width:960px){
+  nav.main{display:none}
+  .jump{display:block}
+  .ver{display:none}
+  .hero{padding:52px 0 30px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:0}
+  .p-layout{grid-template-columns:1fr; gap:18px}
+  .p-rail{position:static; display:flex; overflow:auto; gap:4px; padding-bottom:6px}
+  .p-group{margin:0; display:flex; gap:2px; align-items:center}
+  .p-group h4{display:none}
+  .p-btn{white-space:nowrap; border-left:0; border-bottom:2px solid transparent; padding:6px 8px}
+  .p-btn.on{border-left:0; border-bottom-color:var(--amber); box-shadow:none}
+  .p-cols,.arch-wrap,.take{grid-template-columns:1fr; gap:24px}
+  .grid-models{grid-template-columns:repeat(2,1fr)}
+  .choose{grid-template-columns:repeat(2,1fr)}
+  .result{grid-template-columns:1fr}
+  .sec-head p{display:none}
+}
+@media (max-width:640px){
+  .wrap{padding:0 18px}
+  .ver{display:none}
+  nav.main{gap:16px; justify-content:flex-start}
+  .grid-models{grid-template-columns:1fr}
+  .tbl td:first-child{width:104px}
+  .choose{grid-template-columns:1fr 1fr}
+  .sheet{margin:3vh 12px; padding:24px 20px}
+}
+@media print{
+  header.top,.p-rail,.toolbar,.p-nav,.modal{display:none}
+  body{background:#fff}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">单细胞大模型<span>调研</span></div>
+    <select class="jump" id="jump" aria-label="跳转章节">
+      <option value="overview">概览</option>
+      <option value="problems">12 个问题</option>
+      <option value="arch">6 类架构</option>
+      <option value="models">27 个模型</option>
+      <option value="matrix">问题 × 架构</option>
+      <option value="choose">选型</option>
+      <option value="notes">判断</option>
+    </select>
+    <nav class="main" id="nav">
+      <a href="#overview" class="on">概览</a>
+      <a href="#problems">12 个问题</a>
+      <a href="#arch">6 类架构</a>
+      <a href="#models">27 个模型</a>
+      <a href="#matrix">问题 × 架构</a>
+      <a href="#choose">选型</a>
+      <a href="#notes">判断</a>
+    </nav>
+    <div class="ver">2026.10</div>
+    <div id="progress"></div>
+  </div>
+</header>
+
+<main>
+<section id="overview" class="hero">
+  <div class="wrap">
+    <div class="kicker">2021–2026 · 工作笔记</div>
+    <h1>单细胞大模型：12 个问题，6 类架构</h1>
+    <p class="sub">27 个模型看下来，翻来覆去就那几件事：数据干不干净、词表通不通用、学的目标对不对。这份材料先按问题整理，再把 27 个模型归成 <em>6 类</em>。</p>
+    <div class="hero-meta">
+      <span>资料到 2026-10</span>
+      <span>论文、预印本、官方仓库</span>
+      <span>厂商自己说的单独标</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>12</b><span>个问题，按数据管线分四层</span></div>
+      <div class="stat"><b>6</b><span>类架构，看它把什么当输入</span></div>
+      <div class="stat"><b>27</b><span>个模型，一个个说取舍</span></div>
+      <div class="stat"><b>4.2%</b><span>扰动里真有交互的基因对</span></div>
+    </div>
+    <div class="reading">
+      <span><b>想挑模型</b> → 「选型」</span>
+      <span><b>想判断靠不靠谱</b> → 「问题」和「判断」</span>
+      <span><b>想弄懂分类</b> → 「6 类架构」</span>
+    </div>
+  </div>
+</section>
+
+<section id="problems">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2>12 个问题</h2>
+      <p>每个问题只讲四件事：难在哪、有什么证据、谁试过、代价是什么。</p>
+    </div>
+    <p class="intro">这 12 个问题不是并列的。很多时候你把这一层修好，麻烦就跑到下一层去了。</p>
+
+    <div class="p-layout">
+      <aside class="p-rail" id="p-rail" aria-label="问题列表"></aside>
+      <div class="p-panel" id="p-panel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section id="arch">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2>6 类架构</h2>
+      <p>分类只看两件事：它把什么当输入，它被什么信号训练。</p>
+    </div>
+    <p class="intro">主干网络不算分类依据。Performer、RetNet、Mamba 只决定能读多长、跑多快，不决定模型学什么。同一个 Mamba，A 类能用，E 类也能用。</p>
+
+    <div class="tabs" id="arch-tabs" role="tablist"></div>
+    <div class="arch-wrap">
+      <div id="arch-panel" role="tabpanel"></div>
+      <div class="map">
+        <svg viewBox="0 0 440 330" id="arch-map" aria-label="建模单元与学习信号分布图">
+          <g stroke="#eceff3" stroke-width="1">
+            <line x1="60" y1="28" x2="60" y2="252"/>
+            <line x1="60" y1="252" x2="420" y2="252"/>
+          </g>
+          <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="10.5" fill="#8a94a6">
+            <text x="60" y="16">学习信号</text>
+            <text x="60" y="306">建模单元 →</text>
+            <text x="50" y="84" text-anchor="end">重建</text>
+            <text x="50" y="174" text-anchor="end">生成</text>
+            <text x="50" y="224" text-anchor="end">对齐 / 预测</text>
+            <text x="100" y="272" text-anchor="middle">基因</text>
+            <text x="185" y="272" text-anchor="middle">表达谱</text>
+            <text x="270" y="272" text-anchor="middle">细胞</text>
+            <text x="340" y="272" text-anchor="middle">状态</text>
+            <text x="405" y="272" text-anchor="middle">语言</text>
+          </g>
+          <g id="map-dots"></g>
+        </svg>
+        <p class="hint">点圆点切换大类。纵轴是学习信号，横轴是建模单元。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="models">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2>27 个模型</h2>
+      <p>可以搜，可以按类筛。点开是设计、代价和一句评价。</p>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <input id="q" type="search" placeholder="搜模型、机构或关键词，比如 UCE、蛋白、扰动" aria-label="搜索模型">
+      </div>
+      <button class="fchip on" data-f="all">全部</button>
+      <button class="fchip" data-f="A">A 掩码</button>
+      <button class="fchip" data-f="B">B 自回归</button>
+      <button class="fchip" data-f="C">C 编解码</button>
+      <button class="fchip" data-f="D">D 细胞集合</button>
+      <button class="fchip" data-f="E">E 状态分布</button>
+      <button class="fchip" data-f="F">F 语言接口</button>
+      <span class="count" id="m-count"></span>
+    </div>
+    <div class="grid-models" id="m-grid"></div>
+  </div>
+</section>
+
+<section id="matrix">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">04</span>
+      <h2>问题 × 架构</h2>
+      <p>哪类做法真的回应了哪个问题。空着不是没提，是没有专门设计。</p>
+    </div>
+    <p class="intro">P3 整行是空的，因为数据泄漏没有架构解。P11 几乎每列都有点，因为适配是工程问题，冻结、LoRA、小模型都能缓解。</p>
+    <div class="matrix-scroll">
+      <div class="mx" id="mx"></div>
+    </div>
+    <div class="legend">
+      <span><i style="width:12px;height:12px;background:#2f5e8c"></i>核心设计</span>
+      <span><i style="width:9px;height:9px;background:#9db9d1"></i>部分</span>
+      <span><i style="width:6px;height:6px;background:#6c7c8c"></i>间接</span>
+      <span>点格子看说明</span>
+    </div>
+    <div class="mx-note" id="mx-note">点一个格子，看它为什么是这个颜色。</div>
+  </div>
+</section>
+
+<section id="choose">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">05</span>
+      <h2>从任务出发选型</h2>
+      <p>先看任务落在哪一层，再排除你接受不了的代价。</p>
+    </div>
+    <div class="choose" id="tasks"></div>
+    <div class="result" id="result"></div>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-no">06</span>
+      <h2>判断与建议</h2>
+      <p>五条趋势，三条建议，一条不建议。</p>
+    </div>
+    <div class="take">
+      <ol id="judgements"></ol>
+      <div>
+        <div class="box">
+          <h4>三条值得走的路</h4>
+          <p><b>做数据。</b>干净、带对照的扰动数据，比再训一个模型值钱。</p>
+          <p><b>做目标。</b>分布损失、因果识别、可识别性，才是 P8–P10 的解法。</p>
+          <p><b>做评测。</b>时间切分、逐细胞审计、失败案例，决定判断力。</p>
+        </div>
+        <div class="box" style="margin-top:14px;border-left:2px solid var(--brick)">
+          <h4 style="color:var(--brick)">不建议</h4>
+          <p style="margin:0">再训一个同质的大模型。除非你有别人没有的数据，或者别人没有的算力栈。</p>
+        </div>
+      </div>
+    </div>
+    <p class="quote">先用强基线把任务做到 80 分，再问 scFM 能不能把最后 20 分补上。<br>补不上，不是模型不好，是任务不需要它。</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>数据到 2026 年 10 月。厂商自己公布的数字（CellOS 的 12B、3.905 亿细胞，Lingshu 说的 VCC 领先）都单独标了，没复现过。</span>
+    <span><a href="单细胞大模型_问题与架构_调研报告.docx">完整报告 DOCX</a> · <a href="单细胞大模型_问题与架构_调研报告.pdf">PDF</a> · <a href="单细胞大模型_问题与架构_汇报.pptx">汇报稿</a></span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="backdrop" data-close></div>
+  <div class="sheet" id="sheet" tabindex="-1"></div>
+</div>
+
+<script>
+const P = [
+ {id:"P1",layer:"数据",name:"规模幻觉",lead:"数据加了一个数量级，下游分数基本没动。",
+  mech:"语言模型能越做越大，是因为每读一段新文本都有新答案可学。单细胞这边，模型的任务是把输入重建出来；新加的细胞如果和已有的差不多，加了也白加。基因就两万个，细胞状态翻来覆去就那些。",
+  ev:"有人用 2,220 万细胞训了 400 个模型、跑了 6,400 次训练，结论是：只用 1%–10% 的数据，指标就到顶了，有些任务还不如 HVG 加 Harmony。scFoundation 那条漂亮的缩放曲线画的是预训练 loss，不是下游。",
+  sol:[["scFoundation","把缩放做在预训练 loss 上，300 万 / 1,000 万 / 1 亿三档","只证明能 scale，没证明有用"],["CellFM","堆到 8 亿参数、1.02 亿细胞，RetNet 主干","只有人；参数和效果没对上"],["UCE","换多样性：8 物种、300 多个数据集，不要基因词表","零样本强，定量弱"],["TranscriptFormer","换进化跨度：12 物种、24 万词表","贵；物种还是偏脊椎动物"],["CellOS","3.905 亿细胞、12B MoE（厂商口径）","没开源，也没人复现"]],
+  crit:"别只看 loss。要一条“下游指标 vs 用了多少 token”的曲线，测试集还得按时间切。拿不出来，说“更大”就没意义。",hint:"没有哪一类真解决了。大家只是换数据分布。"},
+ {id:"P2",layer:"数据",name:"噪声与批次",lead:"数据里最强的信号，经常是机器，不是细胞。",
+  mech:"零有两种意思：这个基因没表达，或者表达了但没测到。再加上双细胞、环境 RNA、批次，技术差异能做到和生物差异一样大。模型很懒，认出数据集编号比认生物学容易，它就会去认编号。",
+  ev:"scGPT 的批次整合在好几个数据集上不合格，可 ASW 还是很好看。scContam 的解释是：数据集级的 ASW 会把标注粗不粗也算进去。",
+  sol:[["scGPT","批次、模态当条件 token，加到每个基因位","推理得给协变量；新批次还是没见过"],["Geneformer","先除基因中位表达，再排序","排序怕 dropout"],["scFoundation","末尾拼 T/S 两个深度 token","深度外推靠训练覆盖"],["UCE","按表达加权抽 1,024 个基因","抽样随机，复现要固定种子"],["CellPLM","批次标签只进解码器","只在训练分布里成立"],["State","用集合损失（MMD / 能量距离）","丢单细胞分辨率"]],
+  crit:"同一批生物、不同批次，和同一批次、不同生物，两组都得做。再往里灌 20% 噪声看掉多少。只报一组不算数。",hint:"D 类是正面回答，A 类靠把批次塞进输入，其他类是顺带。"},
+ {id:"P3",layer:"数据",name:"数据泄漏",lead:"这个问题没有模型能修。",
+  mech:"公共图谱既是训练集，也是测试集。模型方很少公开逐细胞清单，你也没法确认测试集它见没见过。很多“零样本”，说白了就是近似检索。",
+  ev:"有人拿 MinHash 一个个比对：PBMC 3k 里 80.4% 的细胞、人胰岛里 77.0%，都在 Genecorpus-30M 里出现过；截止日之后发布的数据集是 0%。而且被污染过的细胞，嵌入明显更挤。",
+  sol:[["时间切分","只测截止日之后发布的数据","最硬，但新数据少"],["MinHash 指纹","逐细胞比对训练语料","得公开语料，算力也贵"],["成员推断","看损失或嵌入距离，猜它见没见过","假阳性不好控"],["数据卡","公开语料清单、去重方法、许可","现在没人强制"]],
+  crit:"看三件事：有没有截止日、有没有语料清单、零样本是不是只在截止日后的数据上跑的。缺一条，结论就打折。",hint:"整行是空的。这活儿归数据审计，不归模型。"},
+ {id:"P4",layer:"数据",name:"长尾与偏移",lead:"总体 97.5%，稀有细胞照样认不出来。",
+  mech:"细胞类型是长尾分布，罕见的那类可能就几十个细胞。它们的标记基因表达量低，而 HVG、top-k、2,048 截断这些操作，第一个砍掉的就是低表达基因。换物种、换 panel，词表和分布还会一起偏。",
+  ev:"有人做了 162 次受控训练（3 个骨架 × 3 个数据集 × 6 种长尾损失 × 3 个种子），总体准确率能到 97.5%，稀有类召回还是崩。而且换损失基本没用，问题出在数据结构上。",
+  sol:[["TranscriptFormer","24 万全基因词表，不靠 HVG","输出头宽，计算贵"],["Lingshu-Cell","约 1.8 万基因全量建模","采样慢，还是预印本"],["AlphaCell","19,253 个 HGNC 基因全量输入","1.2B 解码器，成本高"],["UCE","不要词表，蛋白嵌入当身份","二分类目标，幅值丢了"],["长尾损失","重采样、重加权、focal loss","162 次实验里几乎没用"]],
+  crit:"要 per-class recall，要稀有类的外部验证。跨 panel 的时候，报告一下测试基因有多少在词表里。",hint:"A 类有全基因的版本，但主要还是数据的问题。"},
+ {id:"P5",layer:"表示",name:"词表与顺序",lead:"基因不是词。它没有顺序，词表还老变。",
+  mech:"词有词表，句子有语法，基因两样都没有。新基因、小 panel、换物种，固定词表就废了。所以每个模型都得先回答：基因的身份从哪来，顺序从哪来。",
+  ev:"现在有四条路，各有各的代价（见下表）。UCE 用蛋白序列当身份，训练时没见过的物种也能嵌。",
+  sol:[["可学习位置嵌入","每个基因一个向量（scGPT、scFoundation）","词表锁死，加基因要扩表或重训"],["按表达量排序","名次当语义（Geneformer、Nicheformer）","绝对量没了，dropout 会让排名整体平移"],["蛋白语言模型","ESM-2 嵌入当身份（UCE、TranscriptFormer、scPRINT）","5,120 维表常驻显存，不同物种向量还不一样"],["调控或本体先验","GRN 排序（RegFormer）、同源映射（GeneCompass）、GO 矩阵（CellVQ）","先验不好，上限就低"],["文本","基因名直接给 LLM（GenePT、Cell2Sentence）","分词和命名一乱就完，定量也差"]],
+  crit:"三个问题：能不能嵌没见过的基因或物种？换 panel 之后性能还剩多少？扩词表要不要重训？答不上来，跨物种就是宣传语。",hint:"A 类正面解决，F 类用文本绕开，代价不一样。"},
+ {id:"P6",layer:"表示",name:"值的离散化",lead:"把连续值切成格子，图的是省事；代价要等分布变了才看见。",
+  mech:"分箱丢的不只是精度。bin 里的幅值没了，bin 之间的顺序要模型自己学，零膨胀让有效码率远低于名义值，边界还写死在训练集上。下游要 log fold-change，它只能给你 bin 中心。",
+  ev:"1,000 万细胞、100 个数据集，从头训 8 种配置：soft binning > 连续 ≈ log 分箱 > 硬分箱，最好 0.860，最差 0.547。还有个反直觉的结论：基因侧怎么编码，比表达值怎么编码影响更大。",
+  sol:[["硬分箱","scBERT 7 档、scGPT 每细胞 51 档","幅值和序都受损，边界还漂"],["秩编码","Geneformer、Nicheformer","绝对幅值没了，怕 dropout"],["软分箱","scFoundation、CellVQ、State 10 箱","可微、保序，多一层超参"],["连续投影","CellFM、CellPLM、CAPTAIN","保留幅值，怕噪声和尺度漂移"],["分布头","scPRINT 的 ZINB、TranscriptFormer 的 ZTP","假设强，训练容易不稳"]],
+  crit:"别在同分布上比。换数据集、做逆扰动，看 DE 那端的误差。",hint:"C、D、E 类都动了值编码，A 类变体最多。"},
+ {id:"P7",layer:"表示",name:"语境缺失",lead:"把组织打散了测，细胞之间的关系就没了。",
+  mech:"主流预训练都假设细胞互相独立，一个细胞一条序列。做注释问题不大；做微环境、细胞通讯、组织结构，这个假设直接不成立。",
+  ev:"只在解离数据上训的模型，学不会空间语境；联合训练之后，能把空间信息迁回普通 scRNA。2026 年那次空间评测，没有模型全面领先。",
+  sol:[["CellPLM","切片里的细胞互相看，加 2D 位置编码","基因关系被压成一个加权和"],["State","256 个细胞当集合，不加位置编码","不做空间，集合丢分辨率"],["Nicheformer","解离和空间一起预训练","空间 panel 有限"],["tGPT","把细胞序列当文本读","顺序是人为的，分辨率也降"],["PULSAR","显式建 cell–cell 相互作用","预印本，评测少"]],
+  crit:"看邻域一致性、空间标签、反卷积。再报告一下：把坐标去掉，性能掉多少。",hint:"D 类是主场，E 类顺带，其他类没专门设计。"},
+ {id:"P8",layer:"目标",name:"重建 ≠ 理解",lead:"掩码重建学的是共表达，不是谁调控谁。",
+  mech:"A 和 B 老一起高表达，模型就能互推，它不需要知道谁在上游。注意力是模型内部的路由，不是因果。GRN 是有向的、看条件的、稀疏的。",
+  ev:"综述里明确写过注意力不稳定；scPRINT 干脆把 GRN 当第一输出，拿公开网络去评。把注意力图直接当网络发，这三年见得太多。",
+  sol:[["GeneCompass","GRN、启动子、家族、共表达四路拼进输入","先验覆盖到哪，上限就到哪"],["RegFormer","用 GRN 层级决定基因顺序","只有人；复现少"],["scPRINT","输出 ZINB，注意力矩阵直接当网络","注意力不等于因果，真值本身也有争议"],["CellVQ","19,266×19,266 的可训练 GO 矩阵","占总参数 73%，不划算"],["Geneformer","in silico 扰动：删基因、改秩次","相关性推断，不是因果"]],
+  crit:"和 ChIP-seq、Perturb-seq 对一下重叠；留一个没见过的 TF 测靶基因；把注意力头删掉，看性能是不是真掉。",hint:"A 类靠先验和扰动，D、E 不主攻这个。"},
+ {id:"P9",layer:"目标",name:"扰动与因果",lead:"端到端，还没打过“两个单扰动加起来”。",
+  mech:"扰动效应本来就小，细胞之间差异又大，再叠一层技术噪声。逐细胞回归会把异质性和噪声一起学进去。更麻烦的是真交互很少，大部分“交互预测”压根没有真值。",
+  ev:"Norman 双扰动上，所有模型的误差都高于 additive 基线；FDR 5% 下，124,000 个基因对里只有 4.2% 是真交互。VCC 2025 也没模型稳定超过朴素基线。",
+  sol:[["State","预测 256 个细胞的集合，MMD / 能量距离","要扰动数据，丢单细胞分辨率"],["scGPT","把敲掉的基因设成未知，用已知去推","逐细胞目标，怕分布偏移"],["AlphaCell","OT-CFM 在 32×128 隐流形上学转移","预印本，1.2B 解码器"],["Lingshu-Cell","离散扩散，按条件生成","采样慢，预印本"],["xTrimoSCPerturb","改 scFoundation，加 DEG 频率这类统计特征","VCC 冠军方案，场景很窄"],["additive 基线","两个单扰动响应直接相加","最强基线，交互预测接近“不变”"]],
+  crit:"DES、PDS、MAE 都要报，见过的扰动和没见过的分开。对照组里必须有 additive 和“预测不变”。",hint:"D、E 类是主场，因为它们换了损失。"},
+ {id:"P10",layer:"目标",name:"生成与多模态",lead:"生成一整条表达谱，比加个解码头难多了。",
+  mech:"两万个基因彼此相关，还有零膨胀，还要按细胞类型、供体、扰动去条件。多模态的数据更少，缺一个模态是常态。现实里的任务往往是补全，不是融合。",
+  ev:"SCMBench 比了 23 种方法，基础模型在多组学整合上不如专用方法。CAPTAIN 做到 426 万 CITE-seq 细胞、382 种蛋白，但 panel 还是窄。",
+  sol:[["scMulan","细胞句子加实体/数值双头，改句尾就换任务","10 档离散值，长序列"],["Lingshu-Cell","离散扩散，约 1.8 万基因","采样成本高"],["AlphaCell","全基因输入加流匹配，配 1.2B 解码器","解码器太大，不好解释"],["CAPTAIN","蛋白 query 去读 RNA，382 种蛋白","面板窄，物种写死两个"],["Nicheformer","从解离数据预测空间语境","空间 panel 有限"]],
+  crit:"生成看分布距离和 DE 保真；补全看分位数校准；多模态就看拿掉一个模态之后掉多少。",hint:"B、C、E 都能生成，差在采样成本和分辨率。"},
+ {id:"P11",layer:"适配·评价",name:"适配成本",lead:"最后一公里不是精度，是能不能在别人的机器上跑。",
+  mech:"预训练几十张卡跑几周；微调对种子和超参都敏感；许可是五种混着来。代码、权重、论文、数据，四份许可还可能不一样。",
+  ev:"scBERT 微调对种子敏感，把预训练去掉，指标也没有统计差异（p=0.34 / 0.59）。CC BY-NC-ND 不能商用，没 LICENSE 默认保留所有权利。",
+  sol:[["冻结探针","UCE、CellPLM、SCimilarity，只训线性头","上限看嵌入质量"],["参数高效微调","CellFM 用 LoRA，scGPT 只解冻部分层","接近全参，还是得调"],["适配器","CellWhisperer 只训模态接头","精度被冻结的塔拖住"],["小模型","Geneformer 一千万参数","容量小，跨域弱"]],
+  crit:"10% 标注下的增益、调参花了多少、单卡能不能跑。",hint:"每类都能缓，区别只是程度。"},
+ {id:"P12",layer:"适配·评价",name:"评测失焦",lead:"指标对不上问题，榜单就只是榜单。",
+  mech:"扰动里绝大多数基因几乎没变化，MSE 和 Pearson 被这些近零值占满。任务定义也不统一：都叫零样本，有的排掉了重叠，有的没排。",
+  ev:"ICML 2026 有篇立场论文说，榜单饱和不是因为能力到顶，是指标分不出“真会”和“记住了”。scEval 跑了 8 类任务、10 个模型，也没有全能选手。",
+  sol:[["VCC","用“能不能替代一次 Perturb-seq”定义任务","任务窄，成本高"],["Cell_Eval","DES / PDS / MAE / Pearson / Spearman / AUPRC 七项","还是以点预测为主"],["scEval","8 类任务、10 个模型，把超参和稳定性也算进去","结论跟任务选择走"],["污染审计","MinHash 逐细胞比对","得公开语料"]],
+  crit:"预注册指标、时间切分、盲测、复现包。四条缺一条，榜单只能当参考。",hint:"没有模型解，但报告方式可以改。"}
+];
+
+const C = [
+ {k:"A",name:"掩码基因序列",tag:"看一半，猜一半",color:"#1f3a5f",
+  def:"把细胞写成基因 token 序列，遮住一部分，让模型从上下文猜回来。BERT 那套直接搬。",
+  mech:"共表达就是语法。两个基因老一起出现，模型就能互推。注释、检索、基因功能够用。",
+  cost:"它只被奖励“重建自己”，没人奖励它“预测对干预”。零样本最容易输给 HVG 加逻辑回归。",
+  models:["scBERT","Geneformer","GeneCompass","Nicheformer","UCE","CellFM","scPRINT","RegFormer"],
+  var:"硬分箱 → 秩 → 连续 → 软分箱 → 蛋白身份 → 分布头",
+  fit:"注释、检索、基因功能；数据少的时候拿它做初始化",avoid:"扰动预测、生成、跨物种定量"},
+ {k:"B",name:"自回归基因序列",tag:"顺着往下写",color:"#2e5c8a",
+  def:"把细胞当成一个概率序列，p(x)=∏p(g,c|前序)。学的是似然，不是重建。",
+  mech:"生成是架构自带的：条件生成、计数分布、不确定性，不用另外加头。",
+  cost:"推理要一个一个 token 走；基因顺序是人定的；分布外容易过度自信。",
+  models:["scGPT","TranscriptFormer","scMulan"],
+  var:"块状掩码 → 随机排列 + ZTP → 元数据句子",
+  fit:"条件生成、扰动模拟、要不确定性的地方",avoid:"低延迟、超长序列"},
+ {k:"C",name:"连续谱编解码",tag:"压成向量，再还原",color:"#b9762f",
+  def:"把整条谱压成一个向量，再解码回来。",
+  mech:"去噪、补全、跨平台、跨模态。稀疏性可以显式利用。",
+  cost:"基因数得固定；MSE 被高表达基因主导，低表达那端几乎没约束。",
+  models:["scFoundation","xTrimoGene","CellVQ","CAPTAIN"],
+  var:"非对称稀疏 → 离散瓶颈 → 跨模态",
+  fit:"去噪、补全、跨平台迁移、蛋白补全",avoid:"基因级差异表达、需要解释边的地方"},
+ {k:"D",name:"细胞集合",tag:"细胞看细胞",color:"#5b7f5e",
+  def:"细胞当 token。同一张切片、同一组扰动里的细胞互相看。",
+  mech:"把语境带进来。池化之后的细胞向量更稳，适合做群体级别的预测。",
+  cost:"基因之间的关系被压平；推理要有邻域或切片；集合一平均，单细胞分辨率就没了。",
+  models:["CellPLM","State","tGPT","Tahoe-x1"],
+  var:"切片注意力 → 集合分布 → 细胞序列",
+  fit:"扰动分布、细胞检索、空间组织、药物筛选",avoid:"单细胞级精准预测、调控网络"},
+ {k:"E",name:"状态分布",tag:"学分布，不学点",color:"#a5484a",
+  def:"学 p(x_t | x_0, c)：扩散去噪、流匹配速度场、JEPA 隐空间预测。",
+  mech:"不复述输入，直接学状态怎么变。异质性和噪声被边缘化，而不是被拟合。",
+  cost:"采样慢；不好解释；评测还没跟上。拿点指标去评分布模型，量不准。",
+  models:["Lingshu-Cell","AlphaCell","CellOS","scDifformer"],
+  var:"离散扩散 → OT-CFM → JEPA → 扩散后训练",
+  fit:"扰动响应、状态转移、条件生成",avoid:"要即时解释、算力紧的场景"},
+ {k:"F",name:"语言接口",tag:"把细胞翻译成人话",color:"#6b4c7a",
+  def:"把细胞和语言放进同一个坐标系：转成文本、文本嵌入，或者做对比对齐。",
+  mech:"冷启动、检索、零样本注释。一句话查细胞、给 UMAP 上色，都是它。",
+  cost:"读得到“是什么”，读不到“多少”。语言能说身份，说不了幅值。",
+  models:["Cell2Sentence","GenePT","LangCell","CellWhisperer"],
+  var:"文本序列化 → 文本嵌入 → 对比对齐",
+  fit:"检索、注释、解释、对话式查询",avoid:"扰动预测、剂量响应、精细定量"}
+];
+
+const M = [
+ {n:"scBERT",c:"A",y:2021,org:"腾讯 AI Lab",spec:"110 万细胞 · 参数未公开",mod:"RNA",lic:"GPL-3.0",
+  design:"拿 gene2vec 当基因身份，省掉位置编码；序列 16,907 太长，用 Performer 把注意力压到线性；只遮非零表达。",
+  cost:"模型只有 200 维，词表也锁死；在 PBMC 上没打过逻辑回归。",verdict:"意义大于实用。"},
+ {n:"Geneformer",c:"A",y:2022,org:"Gladstone / UCSF",spec:"2,990 万细胞 · 10M 参数",mod:"RNA",lic:"开源*",
+  design:"先把每个细胞的总计数拉平，再除以基因的中位表达，按表达量排序取前 2,048 个；管家基因被压到后面，转录因子顶到前面。",
+  cost:"绝对表达量没了；丢一个计数，整条排名会平移；截断会切掉尾部。",verdict:"第一个证明这套迁移学习能用的。"},
+ {n:"scGPT",c:"B",y:2023,org:"多伦多 / Vector",spec:"1,030 万细胞 · 53M 参数",mod:"RNA+ATAC",lic:"MIT",
+  design:"块状掩码：待预测的基因只能看已知基因。于是“敲除”就是把那个基因设成未知，一次前向就出结果。",
+  cost:"每个细胞的分箱边界都不一样；1,200 个 HVG 限制覆盖；零样本打不过基线。",verdict:"生态最全，教程最多。"},
+ {n:"scFoundation",c:"C",y:2023,org:"清华 / 百图",spec:"5,000 万细胞 · 100M 参数",mod:"RNA",lic:"Apache-2.0",
+  design:"编码器只吃非零位，大概十分之一；解码器再还原全谱。末尾拼两个深度 token，表达值用软分箱。",
+  cost:"基因数锁死 19,264；MSE 被高表达基因带走；缩放只在 loss 上成立。",verdict:"工程上最务实。"},
+ {n:"UCE",c:"A",y:2023,org:"Stanford",spec:"3,600 万 / 8 物种 · 650M",mod:"RNA",lic:"MIT",
+  design:"没有基因词表，拿 ESM-2 的蛋白嵌入当身份；按表达量加权，有放回抽 1,024 个基因。",
+  cost:"每次抽样都不一样；嵌入表很大；二分类目标把幅值丢了。",verdict:"做通用坐标系最好用。"},
+ {n:"GeneCompass",c:"A",y:2024,org:"中科院",spec:"1.02 亿细胞 · >100M",mod:"RNA",lic:"无许可",
+  design:"把 GRN、启动子、基因家族、共表达四路知识拼成 3,841 维，再投回 768；人和鼠用同源映射共用一套知识。",
+  cost:"第一层参数大；知识质量决定上限；仓库没有 LICENSE。",verdict:"少数做了湿实验闭环的。"},
+ {n:"Nicheformer",c:"A",y:2024,org:"Helmholtz Munich",spec:"1.1 亿细胞 · 49.3M",mod:"RNA+空间",lic:"BSD-3",
+  design:"排序之前先除一次“技术特异的非零均值”，再加物种、技术、模态三个 token。",
+  cost:"空间 panel 有限；排序还是丢幅值。",verdict:"把空间信息迁回 scRNA 的代表。"},
+ {n:"scPRINT",c:"A",y:2024,org:"Mila 等",spec:"5,408 万细胞 · 2M–100M",mod:"RNA",lic:"GPL-3.0",
+  design:"输出 ZINB 参数；训练时用泊松下采样模拟重测序；注意力矩阵直接当基因网络。",
+  cost:"最多 2,200 个基因；训练不便宜。",verdict:"把 GRN 当主任务。"},
+ {n:"CellFM",c:"A",y:2025,org:"中山大学 / 华为",spec:"1.02 亿细胞 · 800M",mod:"RNA",lic:"Other",
+  design:"40 层 ERetNet，2,048 个基因，表达值直接过 MLP 不再分箱；MindSpore 加 32 张昇腾 910 训的。",
+  cost:"只有人；参数和效果没解耦；许可写的是 Other。",verdict:"国产算力栈跑通了。"},
+ {n:"RegFormer",c:"A",y:2026,org:"华大研究院",spec:"2,500 万细胞 · 45 组织",mod:"RNA",lic:"见论文",
+  design:"用 GRN 决定基因顺序，双嵌入之后接 Mamba。",
+  cost:"只有人；独立复现还少。",verdict:"把先验做进结构里。"},
+ {n:"TranscriptFormer",c:"B",y:2025,org:"CZI",spec:"1.12 亿 / 12 物种 · 444M",mod:"RNA",lic:"MIT",
+  design:"先选基因、再定计数：基因 softmax 加零截断泊松；计数用 log1p 进注意力分数；词表 24 万，覆盖 12 个物种。",
+  cost:"输出头很宽；自回归慢；随机排列得靠打乱来训。",verdict:"生成和跨物种结合得最好。"},
+ {n:"scMulan",c:"B",y:2024,org:"清华大学",spec:"约 1,000 万细胞 · 368.8M",mod:"RNA",lic:"CC BY-NC-ND",
+  design:"细胞写成（实体, 数值）的句子，元数据和任务词也是词；EP 管下一个是谁，VP 管它多少。",
+  cost:"只有 10 档表达值；decoder-only 长序列贵。",verdict:"元数据也能当 prompt。"},
+ {n:"xTrimoGene",c:"C",y:2023,org:"百图 / 清华",spec:">5,000 万细胞 · 未公开",mod:"RNA",lic:"API",
+  design:"跟 scFoundation 一个路子，非对称稀疏，做成 API 卖。",
+  cost:"不开源，细节看不到。",verdict:"模型即服务。"},
+ {n:"CellVQ",c:"C",y:2025,org:"华大研究院等",spec:"6,800 万细胞 · 511M",mod:"RNA",lic:"见论文",
+  design:"12 层编码、6 层 Performer 解码；SoftCVQ 把细胞压成 2^16 码本里的一个整数。",
+  cost:"32 维瓶颈；码本会塌；73% 的参数在 GO 矩阵上。",verdict:"细胞级离散码。"},
+ {n:"CAPTAIN",c:"C",y:2026,org:"湖南大学等",spec:"426 万 CITE-seq · 382 蛋白",mod:"RNA+蛋白",lic:"见论文",
+  design:"蛋白 token 当 query，RNA 当 key/value；输出蛋白丰度和四个分位点。",
+  cost:"只有 382 种蛋白；物种写死两个。",verdict:"CITE-seq 规模化的第一步。"},
+ {n:"CellPLM",c:"D",y:2024,org:"MSU 等",spec:"1,140 万细胞 · 82.4M",mod:"RNA+空间",lic:"BSD-2",
+  design:"细胞当 token，切片内用 Flowformer 互相看；隐空间是 16 分量高斯混合；批次只进解码器。",
+  cost:"基因关系被压平；推理要邻域；位置编码在代码里其实被旁路了。",verdict:"冻结嵌入加轻量头，好用。"},
+ {n:"State",c:"D",y:2025,org:"Arc Institute",spec:"1.67 亿 + 1 亿扰动",mod:"RNA+扰动",lic:"非商用",
+  design:"SE 在 1.67 亿观测细胞上学表征，ST 在 1 亿扰动细胞上学变换；预测 256 个细胞的集合，用 MMD 算损失。",
+  cost:"非商用；集合一平均就丢单细胞分辨率；得有扰动数据。",verdict:"第一个把分布损失做成主流的。"},
+ {n:"tGPT",c:"D",y:2022,org:"同济大学",spec:"2,200 万细胞 · 未公开",mod:"RNA",lic:"开源",
+  design:"把细胞压成排序后的基因列表，再按细胞序列预测下一个细胞。",
+  cost:"分辨率掉了；顺序是人为的；后面基准表现一般。",verdict:"最早的细胞级语言模型。"},
+ {n:"Tahoe-x1",c:"D",y:2025,org:"Tahoe Therapeutics",spec:"9,560 万细胞 · 未公开",mod:"RNA+扰动",lic:"Apache-2.0",
+  design:"建在 Tahoe-100M 上：50 个细胞系混在一孔，用孔内条码和 SNP 拆开；每个细胞 1,024 个 token。",
+  cost:"很依赖自有数据；换实验室能不能用还没验。",verdict:"数据管线本身就是能力。"},
+ {n:"Lingshu-Cell",c:"E",y:2026,org:"阿里达摩院",spec:"约 18,000 基因 · 未公开",mod:"RNA",lic:"预印本",
+  design:"掩码离散扩散，覆盖约 18,000 个基因，按细胞类型/供体 × 扰动条件生成。",
+  cost:"采样慢；还是预印本。",verdict:"最彻底换目标函数的。"},
+ {n:"AlphaCell",c:"E",y:2026,org:"同济 DELTA",spec:"19,253 基因 · 1.2B 解码器",mod:"RNA",lic:"预印本",
+  design:"全基因输入压到 32×128 的隐流形，用 OT-CFM 学状态怎么转移，再拿 1.2B 的解码器还原。",
+  cost:"解码器太大；不好解释。",verdict:"连续时间生成。"},
+ {n:"CellOS",c:"E",y:2026,org:"百曜科技",spec:"3.905 亿细胞 · 12B MoE",mod:"RNA",lic:"未开源",
+  design:"JEPA 双视角联合嵌入预测，不去重建输入；12B MoE。",
+  cost:"厂商口径，没开源。",verdict:"看思路，别盯数字。"},
+ {n:"scDifformer",c:"E",y:2026,org:"之江 / 华大",spec:"未公开",mod:"RNA+空间",lic:"CC BY-NC",
+  design:"预训练 → 扩散后训练 → 微调，主干不换。",
+  cost:"细节披露少；三步流程调参麻烦。",verdict:"务实改良。"},
+ {n:"Cell2Sentence",c:"F",y:2023,org:"Princeton 等",spec:"—",mod:"RNA+文本",lic:"开源",
+  design:"按表达量排序，把基因名拼成句子，直接微调 GPT-2。",
+  cost:"幅值没了；基因名分词不稳；句子长。",verdict:"零改造。"},
+ {n:"GenePT",c:"F",y:2023,org:"Stanford",spec:"无需训练 · 0 参数",mod:"RNA+文本",lic:"开源",
+  design:"ChatGPT 给每个基因的描述做嵌入，细胞就是基因嵌入的加权和。",
+  cost:"不学表达；文本质量决定上限。",verdict:"不训练也能打。"},
+ {n:"LangCell",c:"F",y:2024,org:"清华等",spec:"—",mod:"RNA+文本",lic:"开源",
+  design:"细胞和文本配对做对比预训练。",
+  cost:"配对数据少；语义对齐不等于懂定量。",verdict:"对齐派。"},
+ {n:"CellWhisperer",c:"F",y:2025,org:"CeMM",spec:"108 万对 · 未公开",mod:"RNA+文本",lic:"—",
+  design:"Geneformer 冻结，BioBERT 读文本，各接一个适配器压到 2,048 维；检索就是点积。",
+  cost:"caption 是模型写的，有噪声；检索不是生成。",verdict:"一句话给 UMAP 上色。"}
+];
+
+const MX = [
+ [1,0,2,0,1,0],[2,1,2,3,2,0],[0,0,0,0,0,0],[1,1,2,1,1,1],
+ [3,1,1,0,0,2],[2,2,3,2,2,0],[0,0,0,3,1,0],[2,1,0,0,0,1],
+ [1,2,1,3,3,0],[1,3,3,2,3,1],[3,2,2,3,1,3],[1,1,1,1,2,2]
+];
+
+const TASKS = [
+ {t:"细胞类型注释",cls:"A / D",models:"CellFM、Geneformer、CellPLM",base:"CellTypist、逻辑回归、Seurat",metric:"macro-F1、per-class recall",note:"先跑基线。标记基因覆盖不全的话，换模型也没用。"},
+ {t:"批次整合",cls:"A",models:"scGPT、Geneformer",base:"Harmony、scVI",metric:"iLISI + 生物保守性",note:"先证明不输 Harmony，再谈 scFM。"},
+ {t:"跨物种 / 跨平台",cls:"A（无词表）",models:"UCE、TranscriptFormer",base:"HVG + Harmony",metric:"未见物种 / 平台的嵌入一致性",note:"先查物种和 panel 覆盖，别急着上。"},
+ {t:"扰动 / 虚拟细胞",cls:"D / E",models:"State、Lingshu-Cell、AlphaCell",base:"additive、无变化、GEARS",metric:"DES、PDS、MAE（分见 / 未见）",note:"见过的和没见过的扰动，分开报。"},
+ {t:"药物响应",cls:"C / D",models:"scFoundation、State",base:"线性回归、scDrugMap 基线",metric:"跨细胞系 AUROC、校准",note:"细胞系和药物要严格拆开，不然就是泄漏。"},
+ {t:"生成 / 补全",cls:"B / C / E",models:"scMulan、scFoundation、CAPTAIN",base:"均值填充、kNN",metric:"分布距离、DE 保真、分位数覆盖",note:"看分布，不只看 MSE。"},
+ {t:"空间转录组",cls:"D",models:"Nicheformer、CellPLM",base:"Novae、scGPT-spatial",metric:"邻域一致性、空间标签",note:"组织结构指标比细胞身份重要。"},
+ {t:"GRN / 可解释",cls:"A",models:"scPRINT、RegFormer、GeneCompass",base:"GENIE3、SCENIC",metric:"ChIP / Perturb-seq 重叠",note:"注意力图不能直接当网络。"}
+];
+
+const JUDGE = [
+ ["观测数据快到头了，接下来拼扰动数据。","公开 atlas 已经上亿，再堆观测数据的收益越来越小。"],
+ ["目标会从“重建”换成“分布和转移”。","集合损失会变成标配；只报逐细胞 MSE 的论文，审稿人会让你补。"],
+ ["基因身份会跟词表脱钩。","蛋白语言模型让新基因、新物种、新 panel 不用重训词表。"],
+ ["不会有一个主干通吃。","通用底座加领域适配器，模型卡和适配器市场会比“更大的模型”先出现。"],
+ ["评测会从榜单变成“能不能替代一次实验”。","VCC 已经把任务定义成“能不能替代一次 Perturb-seq”。"]
+];
+
+const CLASS_COLOR = {A:"#1f3a5f",B:"#2e5c8a",C:"#b9762f",D:"#5b7f5e",E:"#a5484a",F:"#6b4c7a"};
+const LAYERS = ["数据","表示","目标","适配·评价"];
+
+/* ---------- problem section ---------- */
+const rail = document.getElementById('p-rail');
+const panel = document.getElementById('p-panel');
+let curP = 0;
+
+function buildRail(){
+  let html='';
+  LAYERS.forEach(layer=>{
+    html+='<div class="p-group"><h4>'+layer+'</h4>';
+    P.forEach((p,i)=>{ if(p.layer===layer){
+      html+='<button class="p-btn" data-i="'+i+'"><b>'+p.id+'</b><span>'+p.name+'</span></button>';
+    }});
+    html+='</div>';
+  });
+  rail.innerHTML=html;
+  rail.addEventListener('click',e=>{
+    const b=e.target.closest('.p-btn'); if(!b) return;
+    showProblem(+b.dataset.i);
+  });
+  rail.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault(); showProblem((curP+1)%P.length);}
+    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault(); showProblem((curP-1+P.length)%P.length);}
+  });
+}
+
+function showProblem(i){
+  curP=i; const p=P[i];
+  document.querySelectorAll('.p-btn').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+  const rows=p.sol.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('');
+  panel.innerHTML =
+   '<div class="p-top"><span class="p-id">'+p.id+'</span><h3>'+p.name+'</h3></div>'+
+   '<p class="p-lead">'+p.lead+'</p>'+
+   '<div class="p-cols"><div><h4>为什么难</h4><p>'+p.mech+'</p></div>'+
+   '<div><h4>证据</h4><p>'+p.ev+'</p></div></div>'+
+   '<div class="p-sol"><h4>谁在解</h4><table class="tbl"><thead><tr><th>模型 / 做法</th><th>怎么做</th><th>代价</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+   '<div class="criterion"><b>判据</b><p>'+p.crit+'</p></div>'+
+   '<div class="p-nav"><button data-go="'+(i-1+P.length)%P.length+'">← '+(i===0?P[P.length-1].id:P[i-1].id)+' '+ (i===0?P[P.length-1].name:P[i-1].name) +'</button>'+
+   '<button data-go="'+(i+1)%P.length+'">'+(i===P.length-1?P[0].id:P[i+1].id)+' '+ (i===P.length-1?P[0].name:P[i+1].name) +' →</button></div>';
+  panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showProblem(+b.dataset.go));
+  if(location.hash!=='#problems/'+p.id.toLowerCase()) history.replaceState(null,'','#problems/'+p.id.toLowerCase());
+}
+
+/* ---------- architecture ---------- */
+const tabs=document.getElementById('arch-tabs');
+const ap=document.getElementById('arch-panel');
+let curC=0;
+
+function buildTabs(){
+  tabs.innerHTML=C.map((c,i)=>'<button class="tab" role="tab" data-i="'+i+'"><i>'+c.k+'</i>'+c.name+'</button>').join('');
+  tabs.addEventListener('click',e=>{const t=e.target.closest('.tab'); if(t) showClass(+t.dataset.i);});
+}
+
+function showClass(i){
+  curC=i; const c=C[i];
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',+t.dataset.i===i));
+  ap.innerHTML =
+   '<div class="arch-head"><span class="arch-letter" style="color:'+c.color+'">'+c.k+'</span><h3>'+c.name+'</h3></div>'+
+   '<div class="arch-tag">'+c.tag+'</div>'+
+   '<div class="arch-block"><h5>定义</h5><p>'+c.def+'</p></div>'+
+   '<div class="arch-block"><h5>机制</h5><p>'+c.mech+'</p></div>'+
+   '<div class="arch-block"><h5>代价</h5><p>'+c.cost+'</p></div>'+
+   '<div class="arch-block"><h5>变体</h5><p>'+c.var+'</p></div>'+
+   '<div class="arch-block"><h5>适合</h5><p>'+c.fit+'　·　不适合：'+c.avoid+'</p></div>'+
+   '<div class="arch-block"><h5>代表</h5><div class="chips">'+
+      c.models.map(m=>'<button class="chip" data-model="'+m+'">'+m+'</button>').join('')+'</div></div>';
+  ap.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>openModel(b.dataset.model));
+  document.querySelectorAll('#map-dots circle').forEach(d=>{
+    d.setAttribute('r', d.dataset.k===c.k ? 9 : 6);
+    d.setAttribute('opacity', d.dataset.k===c.k ? 1 : .55);
+  });
+}
+
+function buildMap(){
+  const pos={A:[100,80],B:[100,170],C:[185,80],D:[270,220],E:[340,170],F:[405,220]};
+  const g=document.getElementById('map-dots');
+  g.innerHTML=C.map(c=>{
+    const [x,y]=pos[c.k];
+    return '<g data-k="'+c.k+'" style="cursor:pointer">'+
+      '<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+c.color+'" opacity=".55"/>'+
+      '<text x="'+(x+12)+'" y="'+(y+4)+'" font-size="10.5" fill="#5d6b7a" font-family="PingFang SC, Microsoft YaHei, sans-serif">'+c.k+'</text></g>';
+  }).join('');
+  g.querySelectorAll('g').forEach(el=>el.onclick=()=>showClass(C.findIndex(c=>c.k===el.dataset.k)));
+}
+
+/* ---------- models ---------- */
+const grid=document.getElementById('m-grid');
+const q=document.getElementById('q');
+const mcount=document.getElementById('m-count');
+let filter='all';
+
+function renderModels(){
+  const term=q.value.trim().toLowerCase();
+  const list=M.filter(m=>{
+    const okF = filter==='all' || m.c===filter;
+    const hay=(m.n+' '+m.org+' '+m.mod+' '+m.design+' '+m.cost+' '+m.verdict).toLowerCase();
+    return okF && (!term || hay.includes(term));
+  }).sort((a,b)=>a.y-b.y);
+  mcount.textContent=list.length+' / '+M.length;
+  grid.innerHTML = list.length ? list.map(m=>
+    '<div class="card" role="button" tabindex="0" data-n="'+m.n+'">'+
+      '<div class="kick"><span class="dot" style="background:'+CLASS_COLOR[m.c]+'"></span><b>'+m.n+'</b><em>'+m.y+'</em></div>'+
+      '<p class="one">'+shortOf(m)+'</p>'+
+      '<div class="tags"><span class="tag">'+m.c+' 类</span><span class="tag">'+m.mod+'</span><span class="tag">'+m.lic+'</span></div>'+
+    '</div>').join('')
+    : '<div class="empty" style="grid-column:1/-1">没有匹配的模型。换个关键词，或点“全部”。</div>';
+  grid.querySelectorAll('[data-n]').forEach(b=>{
+    b.onclick=()=>openModel(b.dataset.n);
+    b.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openModel(b.dataset.n); } };
+  });
+}
+
+function shortOf(m){
+  const parts=m.design.split('；');
+  let t=parts[0];
+  if(t.length<14 && parts[1]) t+='；'+parts[1];
+  return t.length>46 ? t.slice(0,46)+'…' : t;
+}
+
+function openModel(name){
+  const m=M.find(x=>x.n===name); if(!m) return;
+  const c=C.find(x=>x.k===m.c);
+  document.getElementById('sheet').innerHTML =
+    '<button class="close" data-close aria-label="关闭">×</button>'+
+    '<div class="kicker">'+c.k+' 类 · '+c.name+'</div>'+
+    '<h3 id="m-title">'+m.n+'</h3>'+
+    '<div class="meta"><span>'+m.y+'</span><span>'+m.org+'</span><span>'+m.spec+'</span><span>'+m.mod+'</span><span>许可 '+m.lic+'</span></div>'+
+    '<div class="row"><h5>设计</h5><p>'+m.design+'</p></div>'+
+    '<div class="row"><h5>代价</h5><p>'+m.cost+'</p></div>'+
+    '<div class="row"><h5>适合</h5><p>'+c.fit+'</p></div>'+
+    '<div class="verdict">'+m.verdict+'</div>';
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('sheet').focus();
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+document.getElementById('modal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')) closeModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------- matrix ---------- */
+function buildMatrix(){
+  const mx=document.getElementById('mx');
+  let html='<div class="h"></div>';
+  C.forEach(c=>{html+='<div class="h" title="'+c.name+'">'+c.k+'<br>'+c.name+'</div>';});
+  P.forEach((p,i)=>{
+    html+='<div class="rh">'+p.id+' '+p.name+'</div>';
+    MX[i].forEach((v,j)=>{
+      const bg = v===3?'#2f5e8c':v===2?'#9db9d1':v===1?'#dbe4ee':'#fff';
+      const size = v===3?'12px':v===2?'9px':'5px';
+      html+='<div class="cell" data-v="'+v+'" data-i="'+i+'" data-j="'+j+'" style="background:'+bg+';--s:'+size+'" title="'+p.id+' × '+C[j].k+' 类"><span class="d"></span></div>';
+    });
+  });
+  mx.innerHTML=html;
+  mx.addEventListener('click',e=>{
+    const cell=e.target.closest('.cell'); if(!cell) return;
+    document.querySelectorAll('.cell').forEach(c=>c.classList.remove('sel'));
+    cell.classList.add('sel');
+    const i=+cell.dataset.i, j=+cell.dataset.j, v=MX[i][j];
+    const level = v===3?'这一类的核心设计直接针对它。':v===2?'部分针对，但有明确代价。':v===1?'只是顺带，不是结构性的。':'没有结构性回应。';
+    document.getElementById('mx-note').innerHTML='<b>'+P[i].id+' '+P[i].name+' × '+C[j].k+' 类 '+C[j].name+'</b>：'+level+' '+P[i].hint;
+  });
+}
+
+/* ---------- chooser ---------- */
+function buildChooser(){
+  const box=document.getElementById('tasks');
+  box.innerHTML=TASKS.map((t,i)=>'<button class="task'+(i===0?' on':'')+'" data-i="'+i+'">'+t.t+'</button>').join('');
+  box.addEventListener('click',e=>{
+    const b=e.target.closest('.task'); if(!b) return;
+    box.querySelectorAll('.task').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    showTask(+b.dataset.i);
+  });
+  showTask(0);
+}
+function showTask(i){
+  const t=TASKS[i];
+  document.getElementById('result').innerHTML=
+    '<div><h4>先看这类</h4><p class="big">'+t.cls+'</p></div>'+
+    '<div><h4>可以试</h4><p>'+t.models+'</p></div>'+
+    '<div><h4>怎么算过关</h4><p>'+t.metric+'</p></div>'+
+    '<div><h4>先跑这些</h4><p>'+t.base+'</p></div>'+
+    '<div class="note">'+t.note+'</div>';
+}
+
+/* ---------- judgements ---------- */
+function buildJudge(){
+  document.getElementById('judgements').innerHTML=JUDGE.map(j=>
+    '<li><b>'+j[0]+'</b>'+j[1]+'</li>').join('');
+}
+
+/* ---------- nav + progress ---------- */
+function initNav(){
+  const links=[...document.querySelectorAll('#nav a')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const i=secs.indexOf(en.target);
+        links.forEach((a,k)=>a.classList.toggle('on',k===i));
+      }
+    });
+  },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(s=>io.observe(s));
+  const bar=document.getElementById('progress');
+  addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    const p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
+    bar.style.width=(p*100)+'%';
+  },{passive:true});
+}
+
+/* ---------- jump ---------- */
+document.getElementById('jump').addEventListener('change',e=>{
+  const el=document.getElementById(e.target.value);
+  if(el) el.scrollIntoView({behavior:'smooth'});
+});
+
+/* ---------- boot ---------- */
+const INIT_HASH = location.hash;
+const _params = new URLSearchParams(location.search);
+if(_params.get('f')){
+  filter=_params.get('f');
+  document.querySelectorAll('.fchip').forEach(x=>x.classList.toggle('on', x.dataset.f===filter));
+}
+if(_params.get('q')) q.value=_params.get('q');
+
+buildRail(); buildTabs(); buildMap(); renderModels(); buildMatrix(); buildChooser(); buildJudge(); initNav();
+q.addEventListener('input',renderModels);
+document.querySelectorAll('.fchip').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filter=b.dataset.f; renderModels();
+});
+showProblem(0); showClass(0);
+
+if(INIT_HASH.startsWith('#model/')){
+  openModel(decodeURIComponent(INIT_HASH.split('/')[1]));
+}
+if(INIT_HASH.startsWith('#problems/')){
+  const id=INIT_HASH.split('/')[1].toUpperCase();
+  const idx=P.findIndex(p=>p.id===id);
+  if(idx>=0){ showProblem(idx); document.getElementById('problems').scrollIntoView(); }
+}
+</script>
+</body>
+</html>

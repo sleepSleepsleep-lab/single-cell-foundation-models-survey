@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI + 生物：重要论文调研与全文归档（2023–2026）</title>
+<meta name="description" content="AI + 生物交叉领域 32 篇重要论文的筛选、贡献摘要、全文 PDF 下载与归档说明">
+<style>
+:root{
+  --ink:#111827; --ink2:#374151; --muted:#6b7280; --line:#e5e7eb;
+  --bg:#f7f8fa; --card:#fff;
+  --navy:#0b1220; --navy2:#12233f;
+  --amber:#b45309; --amber2:#f59e0b; --amber-bg:#fffbeb;
+  --teal:#0f766e; --teal-bg:#ecfdf5;
+  --blue:#1d4ed8; --blue-bg:#eff6ff;
+  --violet:#6d28d9; --violet-bg:#f5f3ff;
+  --rose:#9f1239; --rose-bg:#fff1f2;
+  --shadow:0 1px 2px rgba(17,24,39,.04),0 10px 28px -18px rgba(17,24,39,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:74px}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15.5px;line-height:1.78;-webkit-font-smoothing:antialiased}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 26px}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--amber2),var(--teal));z-index:100}
+nav.top{position:sticky;top:0;z-index:90;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav.top .inner{max-width:1120px;margin:0 auto;padding:9px 26px;display:flex;align-items:center;gap:16px}
+nav.top .brand{font-weight:850;font-size:14px;white-space:nowrap}
+nav.top .brand span{color:var(--amber)}
+nav.top ul{display:flex;gap:2px;list-style:none;margin:0;padding:0;overflow-x:auto;scrollbar-width:none}
+nav.top ul::-webkit-scrollbar{display:none}
+nav.top a{display:block;padding:6px 10px;border-radius:8px;color:var(--ink2);font-size:13px;white-space:nowrap}
+nav.top a:hover{background:#f3f4f6;text-decoration:none}
+nav.top a.active{background:var(--amber-bg);color:var(--amber);font-weight:750}
+header.cover{position:relative;overflow:hidden;color:#fff;
+  background:radial-gradient(900px 420px at 85% -5%,rgba(245,158,11,.25),transparent 60%),
+  radial-gradient(800px 420px at 0% 110%,rgba(15,118,110,.28),transparent 60%),
+  linear-gradient(135deg,#070d18 0%,#0b1220 55%,#12233f 100%)}
+header.cover::after{content:"";position:absolute;inset:0;opacity:.13;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.16) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(ellipse at 60% 25%,#000 20%,transparent 72%)}
+.cover .inner{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:70px 26px 54px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:#fcd34d;border:1px solid rgba(252,211,77,.35);background:rgba(180,83,9,.2);padding:6px 12px;border-radius:999px}
+.kicker i{width:6px;height:6px;border-radius:50%;background:#fbbf24;box-shadow:0 0 0 4px rgba(251,191,36,.18)}
+h1.title{font-size:clamp(30px,4.2vw,48px);line-height:1.2;margin:18px 0 10px;font-weight:860;letter-spacing:-.015em}
+.subtitle{color:#cbd5e1;font-size:clamp(15px,1.7vw,18px);max-width:900px;margin:0 0 24px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;color:#94a3b8;font-size:13px;margin-bottom:30px}
+.meta b{color:#e2e8f0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:15px 16px}
+.stat .num{font-size:26px;font-weight:850;line-height:1.2}
+.stat .num small{font-size:13px;color:#fcd34d;font-weight:700;margin-left:2px}
+.stat .lab{font-size:12px;color:#94a3b8;margin-top:4px;line-height:1.5}
+.note-top{font-size:12px;color:#7c8ba1;margin-top:20px}
+main{padding:38px 0 10px}
+section{scroll-margin-top:78px;margin:0 0 52px}
+h2{font-size:clamp(22px,2.5vw,29px);line-height:1.3;margin:0 0 8px;font-weight:830;display:flex;gap:11px;align-items:baseline}
+h2 .no{font-size:13px;color:var(--amber);border:1px solid #fde68a;background:var(--amber-bg);padding:3px 9px;border-radius:7px;font-weight:850;letter-spacing:.06em;transform:translateY(-3px)}
+.lede{color:var(--muted);font-size:15px;max-width:920px;margin:0 0 20px}
+h3{font-size:19px;margin:24px 0 10px;font-weight:780}
+p{margin:0 0 13px}
+ul,ol{margin:0 0 15px;padding-left:1.35em}
+li{margin:5px 0}
+strong{font-weight:750;color:#0b1220}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:15px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.callout{border-radius:12px;padding:15px 18px;margin:16px 0;border:1px solid;font-size:14.5px}
+.c-amber{background:var(--amber-bg);border-color:#fde68a;color:#78350f}
+.c-teal{background:var(--teal-bg);border-color:#b7e4dd;color:#134e4a}
+.c-blue{background:var(--blue-bg);border-color:#bfdbfe;color:#1e3a8a}
+.c-rose{background:var(--rose-bg);border-color:#fecdd3;color:#7f1d3a}
+.callout .t{font-weight:800;font-size:13px;letter-spacing:.03em;margin-bottom:5px}
+.criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.crit{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.crit .h{font-size:12px;font-weight:850;color:var(--amber);letter-spacing:.05em;margin-bottom:5px}
+.crit .b{font-size:13.5px;color:var(--ink2);line-height:1.65}
+@media(max-width:680px){.criteria{grid-template-columns:1fr}}
+.chart{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.chart h4{margin:0 0 3px;font-size:15px}
+.chart .sub{font-size:12px;color:var(--muted);margin:0 0 14px}
+.bar-row{display:grid;grid-template-columns:118px 1fr 70px;gap:9px;align-items:center;margin:6px 0;font-size:12.5px}
+.bar-row .nm{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row .track{height:15px;background:#eef2f6;border-radius:6px;overflow:hidden}
+.bar-row .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#fbbf24,#b45309)}
+.bar-row .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:650}
+@media(max-width:560px){.bar-row{grid-template-columns:88px 1fr 60px;font-size:11.5px}}
+.theme{margin:34px 0 0;padding-top:6px}
+.theme-head{display:flex;justify-content:space-between;gap:26px;align-items:flex-end;border-bottom:2px solid #f1f5f9;padding-bottom:12px}
+.theme-kicker{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-weight:800}
+.theme-head h3{margin:4px 0 0;font-size:22px}
+.theme-head h3 .count{font-size:12px;color:var(--muted);font-weight:600;border:1px solid var(--line);padding:2px 8px;border-radius:999px;margin-left:6px}
+.theme-blurb{max-width:520px;color:var(--muted);font-size:13.5px;margin:0}
+@media(max-width:760px){.theme-head{flex-direction:column;align-items:flex-start;gap:6px}}
+.takeaway{background:#0b1220;color:#e2e8f0;border-radius:12px;padding:13px 16px;font-size:13.5px;margin:14px 0 16px;line-height:1.7}
+.takeaway b{color:#fcd34d}
+.paper{background:#fff;border:1px solid var(--line);border-left:4px solid var(--amber2);border-radius:12px;padding:18px 20px 15px;margin:12px 0;box-shadow:0 1px 2px rgba(17,24,39,.03)}
+.p-top{display:flex;align-items:flex-start;gap:10px}
+.p-year{flex:none;font-size:12px;font-weight:850;color:#fff;background:var(--amber);padding:2px 8px;border-radius:6px;transform:translateY(2px)}
+.p-title{flex:1;font-size:16px;line-height:1.45;margin:0;font-weight:760}
+.p-cites{flex:none;font-size:11.5px;color:var(--teal);background:var(--teal-bg);border:1px solid #b7e4dd;padding:2px 8px;border-radius:999px;white-space:nowrap;transform:translateY(2px)}
+.p-meta{font-size:12.5px;color:var(--muted);margin:7px 0 9px;line-height:1.6}
+.p-meta b{color:var(--ink2)}
+.p-contrib{font-size:14px;color:var(--ink2);margin:0 0 8px;line-height:1.75}
+.p-extra{font-size:12.5px;color:var(--amber);background:var(--amber-bg);border-left:2px solid #fbbf24;padding:6px 10px;margin:0 0 9px}
+.p-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.pdf-btn{display:inline-flex;align-items:center;gap:5px;background:var(--teal);color:#fff;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:7px}
+.pdf-btn:hover{background:#0b5f59;text-decoration:none}
+.pdf-btn::before{content:"↓"}
+.p-info{font-size:12px;color:var(--muted)}
+.v-badge{font-size:10.5px;font-weight:750;padding:2px 7px;border-radius:999px;border:1px solid}
+.v-pub{background:var(--teal-bg);color:#047857;border-color:#a7f3d0}
+.v-pre{background:var(--amber-bg);color:var(--amber);border-color:#fde68a}
+.v-pmc{background:var(--blue-bg);color:var(--blue);border-color:#bfdbfe}
+.v-print{background:var(--violet-bg);color:var(--violet);border-color:#ddd6fe}
+.p-note{font-size:12px;color:var(--muted)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;margin:14px 0 8px;box-shadow:var(--shadow)}
+.table-wrap::-webkit-scrollbar{height:8px}
+.table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:700px}
+thead th{background:#f8fafc;text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap;font-weight:780}
+tbody td{padding:9px 11px;border-bottom:1px solid #f1f5f9;vertical-align:top;color:var(--ink2)}
+tbody tr:nth-child(even){background:#fcfcfd}
+tbody tr:hover{background:#fffbeb}
+td.name{font-weight:700;color:var(--ink);white-space:nowrap}
+td.nw{white-space:nowrap}
+.small{font-size:12.5px;color:var(--muted)}
+.tree{background:#0b1220;color:#cbd5e1;border-radius:12px;padding:18px 20px;font-family:"JetBrains Mono",Consolas,monospace;font-size:12.5px;line-height:1.9;overflow-x:auto}
+.tree .d{color:#fcd34d}
+.tree .n{color:#93c5fd}
+.tree .c{color:#64748b}
+.route{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+.route .rc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.route .rc .h{font-size:12px;font-weight:850;color:var(--amber);letter-spacing:.04em;margin-bottom:6px}
+.route .rc .b{font-size:13px;color:var(--ink2);line-height:1.7}
+@media(max-width:760px){.route{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);background:#fff;margin-top:16px}
+footer .inner{max-width:1120px;margin:0 auto;padding:26px 26px 38px;color:var(--muted);font-size:12px;line-height:1.8}
+@media print{
+  nav.top,#progress{display:none}
+  header.cover{background:#0b1220!important;-webkit-print-color-adjust:exact}
+  body{background:#fff;font-size:10pt}
+  .paper,.card,.chart,.table-wrap{box-shadow:none;break-inside:avoid}
+  .table-wrap{overflow:visible}
+  table{min-width:0;font-size:7.5pt}
+  thead th,tbody td{padding:4px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav class="top"><div class="inner">
+  <div class="brand">AI<span>+</span>生物 · 文献调研</div>
+  <ul>
+    <li><a href="#s0">摘要</a></li>
+    <li><a href="#s1">筛选标准</a></li>
+    <li><a href="#s2">领域地图</a></li>
+    <li><a href="#s3">论文清单</a></li>
+    <li><a href="#s4">下载归档</a></li>
+    <li><a href="#s5">版本限制</a></li>
+    <li><a href="#s6">精读路线</a></li>
+    <li><a href="#s7">方法局限</a></li>
+    <li><a href="#s8">完整索引</a></li>
+  </ul>
+</div></nav>
+
+<header class="cover"><div class="inner">
+  <div class="kicker"><i></i> Literature Review · 2023–2026</div>
+  <h1 class="title">AI + 生物：重要论文调研与全文归档</h1>
+  <p class="subtitle">从蛋白质结构预测到虚拟细胞、从基因组语言模型到生物医学 Agent：32 篇高影响力论文的筛选标准、核心贡献、全文 PDF 与获取限制说明</p>
+  <div class="meta">
+    <div>版本 <b>v1.0</b></div>
+    <div>完成时间 <b>2026-10-22</b></div>
+    <div>检索库 <b>OpenAlex · Europe PMC · bioRxiv · arXiv</b></div>
+    <div>覆盖 <b>7 个子领域</b></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="num">32<small> 篇</small></div><div class="lab">入选论文（2023–2026 为主，含 3 篇奠基性）</div></div>
+    <div class="stat"><div class="num">7<small> 个</small></div><div class="lab">子领域：蛋白、基因组、单细胞、病理、药物、LLM、虚拟细胞</div></div>
+    <div class="stat"><div class="num">395<small> MB</small></div><div class="lab">全文 PDF 总体积，按主题归档</div></div>
+    <div class="stat"><div class="num">32/32</div><div class="lab">PDF 校验通过（可打开、页数 > 0）</div></div>
+  </div>
+  <p class="note-top">说明：引用量为 OpenAlex 截至 2026-10-21 的数据；「年份」以首次公开/预印本为准，正式卷期可能晚一年。32 篇全部取得可读全文，其中 16 篇不是出版社原版 PDF，原因见第 05 节。</p>
+</div></header>
+
+<main class="wrap">
+
+<section id="s0">
+  <h2><span class="no">00</span>这次调研做了什么</h2>
+  <p class="lede">目标不是「把所有 AI+生物论文列一遍」，而是用一套可复述的标准，挑出过去三年真正改变了领域问题定义、方法路线或工程实践的论文，并把能公开获取的全文整理成可精读的本地库。</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">七个判断</h3>
+      <ol>
+        <li><strong>结构预测已进入「复合物 + 亲和力」时代。</strong>AlphaFold3 把蛋白—核酸—小分子放进同一个模型；Boltz-2 把结合亲和力做到接近 FEP、且开源。</li>
+        <li><strong>蛋白设计从「生成骨架」走向「可编程 + 多模态」。</strong>RFdiffusion、Chroma 解决可控生成；ESM3 把序列、结构、功能统一到一个生成模型。</li>
+        <li><strong>基因组模型从「预测 track」走向「长上下文 + 生成」。</strong>Enformer → Borzoi → AlphaGenome 把输入推到 1 Mb、输出推到单碱基；Evo 把 DNA 语言模型推到 7B 参数。</li>
+        <li><strong>单细胞从「表征」走向「扰动与虚拟细胞」。</strong>Geneformer/scGPT/scFoundation 完成范式验证；UCE 做跨物种零样本；State 直接建模扰动后的状态转移。</li>
+        <li><strong>病理与影像基础模型已进入临床级评测。</strong>UNI、CONCH、Prov-GigaPath、RETFound 把「自监督预训练 + 少样本迁移」变成数字病理/视网膜影像的默认路线。</li>
+        <li><strong>2025–2026 的新前沿是 Agent 与可解释药物发现。</strong>Biomni 让 LLM 调用工具/数据库/代码；Antibiotic 用可解释 GNN 找到新结构类抗生素并在小鼠验证。</li>
+        <li><strong>真正的瓶颈是数据、评测与获取，而不是模型大小。</strong>本报告 16/32 篇只能拿到预印本/作者稿；领域内「正式版滞后于预印本」是常态。</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">怎么读这份报告</h3>
+      <ul>
+        <li><strong>第 01 节</strong>：筛选标准与排除规则，解释「为什么是这 32 篇」。</li>
+        <li><strong>第 02 节</strong>：领域地图，用 3 张图看主题、年份与引用分布。</li>
+        <li><strong>第 03 节</strong>：32 篇论文卡片，每篇含标题、作者、年份、来源、引用、核心贡献、PDF 链接与版本说明。</li>
+        <li><strong>第 04 节</strong>：下载与归档结构，32/32 校验结果。</li>
+        <li><strong>第 05 节</strong>：16 篇「非出版社原版 PDF」的具体原因与影响评估。</li>
+        <li><strong>第 06 节</strong>：三条精读路线（结构/基因组/应用），可直接照单阅读。</li>
+        <li><strong>第 08 节</strong>：完整索引表，按文件夹顺序列出所有 PDF。</li>
+      </ul>
+      <div class="callout c-teal" style="margin-bottom:0">
+        <div class="t">◆ 一句话结论</div>
+        <p>过去三年，AI+生物的主线从「用大模型做预测」转为「用生成模型做设计、用 Agent 做流程、用扰动数据做因果」。真正的分水岭不是参数，而是<strong>有没有可验证的数据与评测</strong>。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <h2><span class="no">01</span>筛选标准：为什么是这 32 篇</h2>
+  <p class="lede">筛选在 2026-10-21 至 2026-10-22 完成。先由 OpenAlex 按主题检索候选池（约 40 篇），再按以下六条标准逐条过滤，最终保留 32 篇。</p>
+  <div class="criteria">
+    <div class="crit"><div class="h">① 时间窗口</div><div class="b">以 <b>2023-01 至 2026-10</b> 为主。破例保留 3 篇奠基性工作：Enformer（2021）、BioGPT（2022）、DiffDock（2022/ICLR 2023），因为它们是后续大量论文的基线或范式起点，不纳入会失去参照系。</div></div>
+    <div class="crit"><div class="h">② 来源层级</div><div class="b">Nature / Science / Cell 及其子刊（Nat Methods、Nat Biotechnology、Nat Medicine、Nat Genetics、Nat Communications、Cell Research 等）；顶会（ICLR/NeurIPS/ICML）；高影响力预印本（bioRxiv/arXiv）需满足「已被高影响力期刊接收，或引用 &gt; 100，或有广泛使用的开源模型/数据」。</div></div>
+    <div class="crit"><div class="h">③ 影响力证据</div><div class="b">以 OpenAlex 引用量为主，辅以「引用速度」（2025–2026 论文用）、开源采用（GitHub/HuggingFace）、产业采用（药企/病理/临床）。不只看引用总数，避免「老论文通吃」。</div></div>
+    <div class="crit"><div class="h">④ 领域覆盖</div><div class="b">7 个子领域，每领域 3–6 篇；同一模型家族只保留最具代表性的一篇；兼顾「方法突破」与「真实应用」（如 Antibiotic、TamGen 的湿实验验证）。</div></div>
+    <div class="crit"><div class="h">⑤ 可核验性</div><div class="b">必须有 DOI 或稳定预印本链接；优先选择有代码/数据/模型卡的工作；排除只有厂商白皮书、无法核验指标的工作。</div></div>
+    <div class="crit"><div class="h">⑥ 全文可得性</div><div class="b">优先可公开下载的 PDF；正式版不可得时，按「PMC 作者稿 &gt; 机构库 &gt; bioRxiv/arXiv 预印本」降级，并在第 05 节标注，不把预印本冒充正式版。</div></div>
+  </div>
+  <div class="callout c-amber">
+    <div class="t">△ 排除规则（明确不纳入）</div>
+    <p>① 纯综述/评论（例外：AIVC 愿景与 SciPhi 总览，因为它们定义了问题空间）；② 纯临床 AI 预测、缺少生物机制或分子层面贡献的工作；③ 无代码、无数据、无法复现的「榜单型」论文；④ 仅在公司博客/新闻稿发布、没有论文或模型卡的技术声明；⑤ 同一模型的增量版本（只保留首发或最具代表性的版本）。</p>
+  </div>
+  <p class="small">最终分布：出版社版 14 篇，机构库 2 篇，bioRxiv 预印本 8 篇，PMC 作者稿渲染 5 篇，Science 页面全文 1 篇，arXiv 2 篇（共 32 篇，详见第 04–05 节）。</p>
+</section>
+
+<section id="s2">
+  <h2><span class="no">02</span>领域地图：三个分布</h2>
+  <p class="lede">先看「数量」，再看「时间」，最后看「引用」。三张图能快速回答：这个领域的热点在哪、什么时候爆发、哪些论文真正被大量使用。</p>
+  <div class="grid g2">
+    <div class="chart">
+      <h4>主题分布（篇）</h4>
+      <p class="sub">7 个子领域，单细胞与蛋白各 6 篇，药物 3 篇</p>
+      <div class="bar-row"><div class="nm">蛋白质结构/生成</div><div class="track"><div class="fill" style="width:100.0%"></div></div><div class="val">6 篇</div></div><div class="bar-row"><div class="nm">基因组与调控</div><div class="track"><div class="fill" style="width:83.3%"></div></div><div class="val">5 篇</div></div><div class="bar-row"><div class="nm">单细胞/转录组</div><div class="track"><div class="fill" style="width:100.0%"></div></div><div class="val">6 篇</div></div><div class="bar-row"><div class="nm">空间/病理影像</div><div class="track"><div class="fill" style="width:66.7%"></div></div><div class="val">4 篇</div></div><div class="bar-row"><div class="nm">药物发现/分子生成</div><div class="track"><div class="fill" style="width:50.0%"></div></div><div class="val">3 篇</div></div><div class="bar-row"><div class="nm">生物医学 LLM/Agent</div><div class="track"><div class="fill" style="width:66.7%"></div></div><div class="val">4 篇</div></div><div class="bar-row"><div class="nm">虚拟细胞/总览</div><div class="track"><div class="fill" style="width:66.7%"></div></div><div class="val">4 篇</div></div>
+    </div>
+    <div class="chart">
+      <h4>年份分布（篇）</h4>
+      <p class="sub">按首次公开/预印本年计；2024 年为峰值</p>
+      <div class="bar-row"><div class="nm">2021</div><div class="track"><div class="fill" style="width:8.3%"></div></div><div class="val">1 篇</div></div><div class="bar-row"><div class="nm">2022</div><div class="track"><div class="fill" style="width:8.3%"></div></div><div class="val">1 篇</div></div><div class="bar-row"><div class="nm">2023</div><div class="track"><div class="fill" style="width:50.0%"></div></div><div class="val">6 篇</div></div><div class="bar-row"><div class="nm">2024</div><div class="track"><div class="fill" style="width:100.0%"></div></div><div class="val">12 篇</div></div><div class="bar-row"><div class="nm">2025</div><div class="track"><div class="fill" style="width:75.0%"></div></div><div class="val">9 篇</div></div><div class="bar-row"><div class="nm">2026</div><div class="track"><div class="fill" style="width:25.0%"></div></div><div class="val">3 篇</div></div>
+    </div>
+  </div>
+  <div class="chart" style="margin-top:15px">
+    <h4>引用量 Top 10（OpenAlex，对数刻度）</h4>
+    <p class="sub">AlphaFold3 一枝独秀；榜单里既有 2021 的奠基工作，也有 2023–2025 的新模型</p>
+    <div class="bar-row"><div class="nm">Abramson·AF3</div><div class="track"><div class="fill" style="width:100.0%"></div></div><div class="val">15,570</div></div><div class="bar-row"><div class="nm">Watson·RFdiff</div><div class="track"><div class="fill" style="width:80.3%"></div></div><div class="val">2,329</div></div><div class="bar-row"><div class="nm">Wang·SciPhi</div><div class="track"><div class="fill" style="width:77.6%"></div></div><div class="val">1,798</div></div><div class="bar-row"><div class="nm">Chen·UNI</div><div class="track"><div class="fill" style="width:75.9%"></div></div><div class="val">1,523</div></div><div class="bar-row"><div class="nm">Cui·scGPT</div><div class="track"><div class="fill" style="width:75.0%"></div></div><div class="val">1,393</div></div><div class="bar-row"><div class="nm">Avsec·Enformer</div><div class="track"><div class="fill" style="width:74.5%"></div></div><div class="val">1,328</div></div><div class="bar-row"><div class="nm">Theodoris</div><div class="track"><div class="fill" style="width:73.2%"></div></div><div class="val">1,173</div></div><div class="bar-row"><div class="nm">Luo·BioGPT</div><div class="track"><div class="fill" style="width:72.9%"></div></div><div class="val">1,138</div></div><div class="bar-row"><div class="nm">Zhou·RETFound</div><div class="track"><div class="fill" style="width:71.4%"></div></div><div class="val">988</div></div><div class="bar-row"><div class="nm">Singhal</div><div class="track"><div class="fill" style="width:71.3%"></div></div><div class="val">977</div></div>
+  </div>
+  <div class="callout c-blue">
+    <div class="t">ℹ 三个观察</div>
+    <p><strong>① 2024 是「基础模型年」：</strong>AlphaFold3、RoseTTAFold All-Atom、Evo、UNI、CONCH、scGPT、scFoundation 等集中在 2024 发表或正式刊出。<strong>② 2025–2026 是「推理与虚拟细胞年」：</strong>Boltz-2、ESM3、Med-PaLM 2、Biomni、State、AlphaGenome、UCE 把重点从「表征」转向「生成/模拟/Agent」。<strong>③ 引用与年份高度相关：</strong>2026 年的 UCE（17）、State（96）引用低，不代表影响力低；它们代表的是「正在进行的方向」，需要结合预印本引用与社区采用来看。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="no">03</span>论文清单：32 篇与核心贡献</h2>
+  <p class="lede">按 7 个主题排列。每张卡片给出：年份、标题、作者（前三位 + 末位）、发表来源、OpenAlex 引用量、核心贡献、PDF 链接、版本类型与获取说明。</p>
+  
+    <section class="theme" id="t-protein">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Protein structure &amp; design</div>
+          <h3>蛋白质结构与生成 <span class="count">6 篇</span></h3>
+        </div>
+        <p class="theme-blurb">从「预测一个蛋白」到「设计一个复合物、一个结合物」。扩散模型与多模态语言模型是两条主线；2024 年后，共折叠（co-folding）与亲和力预测成为新战场。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>AlphaFold3 把结构预测推进到生物分子复合物；RFdiffusion/Chroma 把生成推进到可控设计；ESM3 把序列、结构、功能放进同一个生成模型。Boltz-2 则把「结构 + 亲和力 + 开源」带到同一张桌子上。</div>
+      
+        <article class="paper" id="p-af3">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Accurate structure prediction of biomolecular interactions with AlphaFold 3</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">15,570 引用</span>
+          </div>
+          <div class="p-meta">Josh Abramson, Jonas Adler, Jack Dunger et al … John Jumper · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-024-07487-w" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">把结构预测从蛋白扩展到蛋白质—核酸—小分子—离子—修饰残基的复合物；扩散架构在蛋白—配体、蛋白—核酸界面上显著超过专用工具，成为后续共折叠模型的基准。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2024_Abramson_AlphaFold3.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">24 页 · 8.2 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA，直接下载</span>
+          </div>
+        </article>
+        <article class="paper" id="p-rfdiffusion">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">De novo design of protein structure and function with RFdiffusion</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">2,329 引用</span>
+          </div>
+          <div class="p-meta">Joseph L. Watson, David Juergens, Nathaniel R. Bennett et al … David A. Baker · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06415-8" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">在 RoseTTAFold 结构预测网络上微调扩散模型，从噪声生成蛋白骨架；支持 de novo binder、对称组装与功能位点 scaffolding；实验验证了大量设计，奠定扩散式蛋白设计范式。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2023_Watson_RFdiffusion.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">38 页 · 34.7 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA，直接下载</span>
+          </div>
+        </article>
+        <article class="paper" id="p-chroma">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">Illuminating protein space with a programmable generative model</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">441 引用</span>
+          </div>
+          <div class="p-meta">John Ingraham, Max Baranov, Zak Costello et al … Gevorg Grigoryan · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06728-8" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">可编程蛋白生成模型：扩散过程尊重聚合物构象统计，支持对称性、形状、功能等多种条件；一次采样即可同时生成新的蛋白骨架与序列，把「生成」从随机采样推进到可控设计。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2023_Ingraham_Chroma.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">15 页 · 8.1 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA，直接下载</span>
+          </div>
+        </article>
+        <article class="paper" id="p-rfa3">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Generalized biomolecular modeling and design with RoseTTAFold All-Atom</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">966 引用</span>
+          </div>
+          <div class="p-meta">Rohith Krishna, Jue Wang, Woody Ahern et al … David A. Baker · <b>Science</b> · <a href="https://doi.org/10.1126/science.adl2528" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">用「残基表示 + 原子表示」统一建模蛋白、DNA、小分子、金属与共价修饰；RFdiffusionAA 可围绕小分子设计结合口袋，把结构预测与设计推进到全原子尺度。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2024_Krishna_RoseTTAFoldAllAtom.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">17 页 · 8.0 MB</span>
+            <span class="v-badge v-print">Science 全文</span>
+            <span class="p-note">Science 订阅制；用公开可访问的 HTML 全文打印为 PDF</span>
+          </div>
+        </article>
+        <article class="paper" id="p-esm3">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Simulating 500 million years of evolution with a language model</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">924 引用</span>
+          </div>
+          <div class="p-meta">Thomas Hayes, Roshan Rao, Halil Akin et al … Alexander W. Rives · <b>Science</b> · <a href="https://doi.org/10.1126/science.ads0018" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">多模态蛋白生成语言模型，联合建模序列、结构、功能并支持组合 prompt；生成的明亮荧光蛋白与已知序列一致性仅 58%，被估计相当于模拟 5 亿年进化。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2025_Hayes_ESM3.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">68 页 · 11.5 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">Science 2025 订阅制；采用 bioRxiv 预印本（正式版可能有差异）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-boltz2">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">687 引用</span>
+          </div>
+          <div class="p-meta">Saro Passaro, Gabriele Corso, Jeremy Wohlwend et al … Regina Barzilay · <b>bioRxiv (Cold Spring Harbor Laboratory)</b> · <a href="https://doi.org/10.1101/2025.06.14.659707" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">开源的结构 + 亲和力联合预测模型：首次在结合亲和力上接近 FEP 精度，同时计算效率高约 1000 倍；支持实验方法条件、距离约束与多链模板，并开放权重与训练代码。</p>
+          <p class="p-extra">权重、推理与训练代码以宽松许可开源，是 2025 年最受关注的开源共折叠模型之一。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/01_蛋白质结构与生成/2025_Passaro_Boltz2.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">55 页 · 7.0 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">目前仅有 bioRxiv 预印本，无期刊正式版</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-genome">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Genomics &amp; gene regulation</div>
+          <h3>基因组与调控 <span class="count">5 篇</span></h3>
+        </div>
+        <p class="theme-blurb">从「预测表达 track」到「1 Mb 输入 + 单碱基输出 + 生成式设计」。评测重点正从相关性转向变异效应与机制解释。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>Enformer 奠定「序列→调控」范式；Borzoi 用 RNA-seq coverage 统一转录/剪接/多聚腺苷化；AlphaGenome 把输入拉到 1 Mb、输出拉到单碱基；Evo 则把 DNA 语言模型推到 7B 参数与 131 kb 上下文。</div>
+      
+        <article class="paper" id="p-enformer">
+          <div class="p-top">
+            <span class="p-year">2021</span>
+            <h4 class="p-title">Effective gene expression prediction from sequence by integrating long-range interactions</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,328 引用</span>
+          </div>
+          <div class="p-meta">Žiga Avsec, Vikram Agarwal, Daniel Visentin et al … David R. Kelley · <b>Nature Methods</b> · <a href="https://doi.org/10.1038/s41592-021-01252-x" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">用 Transformer 整合 100 kb 长程相互作用，显著提升基因表达与变异效应预测；奠定「DNA 序列 → 调控表型」的建模范式，成为 Borzoi/AlphaGenome 的基线。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/02_基因组与调控/2021_Avsec_Enformer.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">24 页 · 18.2 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Methods 混合 OA；2021 年奠基性工作</span>
+          </div>
+        </article>
+        <article class="paper" id="p-borzoi">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">265 引用</span>
+          </div>
+          <div class="p-meta">Johannes Linder, Divyanshi Srivastava, Han Yuan et al … David R. Kelley · <b>Nature Genetics</b> · <a href="https://doi.org/10.1038/s41588-024-02053-6" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">从 DNA 序列预测细胞/组织特异的 RNA-seq coverage，统一建模转录、剪接与多聚腺苷化；在 eQTL/sQTL 等任务上优于 Enformer，并支持变异效应分解。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/02_基因组与调控/2025_Linder_Borzoi.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">34 页 · 13.2 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Genetics 混合 OA</span>
+          </div>
+        </article>
+        <article class="paper" id="p-alphagenome">
+          <div class="p-top">
+            <span class="p-year">2026</span>
+            <h4 class="p-title">Advancing regulatory variant effect prediction with AlphaGenome</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">375 引用</span>
+          </div>
+          <div class="p-meta">Žiga Avsec, Natasha S. Latysheva, Jun Cheng et al … Pushmeet Kohli · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-025-10014-0" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">输入 1 Mb DNA、输出单碱基分辨率的数千条功能基因组 track，覆盖表达、转录起始、染色质可及性、组蛋白修饰、TF 结合、染色质接触与剪接；统一了长序列与高分辨率的取舍。</p>
+          <p class="p-extra">Nature 2026；模型与变异效应 API 已开放，但训练代码/权重未完全开源。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/02_基因组与调控/2026_Avsec_AlphaGenome.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">31 页 · 67.1 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA</span>
+          </div>
+        </article>
+        <article class="paper" id="p-evo">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Sequence modeling and design from molecular to genome scale with Evo</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">580 引用</span>
+          </div>
+          <div class="p-meta">Eric Nguyen, Michael Poli, Matthew G. Durrant et al … Brian Hie · <b>Science</b> · <a href="https://doi.org/10.1126/science.ado9336" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">7B 参数、131 kb 上下文、单核苷酸分辨率的基因组基础模型；在原核基因组上训练，支持突变效应预测、CRISPR 系统生成与最小基因组设计，把 DNA 语言模型推到基因组尺度。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/02_基因组与调控/2024_Nguyen_Evo.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">75 页 · 4.7 MB</span>
+            <span class="v-badge v-pmc">PMC 全文</span>
+            <span class="p-note">Science 订阅制；PMC 作者稿渲染（75 页，含参考文献与补充材料）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-nucleotide_transformer">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Nucleotide Transformer: building and evaluating robust foundation models for human genomics</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">657 引用</span>
+          </div>
+          <div class="p-meta">Hugo Dalla-Torre, Liam Gonzalez, Javier Mendoza‐Revilla et al … Thomas Pierrot · <b>Nature Methods</b> · <a href="https://doi.org/10.1038/s41592-024-02523-z" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">在 3,202 个人类基因组与 850 个跨物种基因组上预训练的一系列 DNA Transformer（50M–2.5B 参数）；系统评估 scaling 与迁移能力，提供可复用的基因组表征。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/02_基因组与调控/2024_DallaTorre_NucleotideTransformer.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">20 页 · 4.5 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Methods 混合 OA</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-singlecell">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Single-cell &amp; transcriptomics</div>
+          <h3>单细胞与转录组 <span class="count">6 篇</span></h3>
+        </div>
+        <p class="theme-blurb">从「细胞注释」到「跨物种通用嵌入 + 扰动状态转移」。数据规模进入亿级，但 zero-shot 与评测争议同步放大。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>Geneformer/scGPT/scFoundation 完成「单细胞基础模型」的范式验证；UCE 把嵌入推向跨物种零样本；State 把目标从「表征」改成「扰动后的状态转移」；CellFM 证明国产算力栈可以训练 8 亿参数模型。</div>
+      
+        <article class="paper" id="p-geneformer">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">Transfer learning enables predictions in network biology</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,173 引用</span>
+          </div>
+          <div class="p-meta">Christina V. Theodoris, Ling Xiao, Anant Chopra et al … Patrick T. Ellinor · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06139-9" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">在约 3,000 万单细胞转录组上预训练 BERT 式模型，按表达量排序 token；迁移学习到染色质与网络任务，并在心肌病数据中识别候选治疗靶点，开创单细胞基础模型范式。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2023_Theodoris_Geneformer.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">47 页 · 6.0 MB</span>
+            <span class="v-badge v-pub">机构库版</span>
+            <span class="p-note">Nature 订阅制；eScholarship 机构库版本（47 页）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-scgpt">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">scGPT: toward building a foundation model for single-cell multi-omics using generative AI</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,393 引用</span>
+          </div>
+          <div class="p-meta">Haotian Cui, Chloe Wang, Hassaan Maan et al. · <b>Nature Methods</b> · <a href="https://doi.org/10.1038/s41592-024-02201-0" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">3,300 万细胞、GPT 式生成预训练；统一细胞注释、批次整合、多组学整合、扰动预测与 GRN 推断；是生态最广、被评测最多的单细胞基础模型之一。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2024_Cui_scGPT.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">36 页 · 18.4 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">Nature Methods 订阅制；bioRxiv v1（2023-05-01）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-scfoundation">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Large-scale foundation model on single-cell transcriptomics</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">629 引用</span>
+          </div>
+          <div class="p-meta">Minsheng Hao, Jing Gong, Xin Ying Zeng et al … Le Song · <b>Nature Methods</b> · <a href="https://doi.org/10.1038/s41592-024-02305-7" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1 亿参数、5,000 万人类细胞、约 2 万基因；非对称 encoder-decoder 支持表达增强、组织/单细胞药敏、扰动预测、注释与基因模块推断，并报告了参数/FLOPs 的 scaling 行为。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2024_Hao_scFoundation.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">25 页 · 5.2 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">Nature Methods 订阅制；bioRxiv 预印本</span>
+          </div>
+        </article>
+        <article class="paper" id="p-uce">
+          <div class="p-top">
+            <span class="p-year">2026</span>
+            <h4 class="p-title">Universal cell embedding provides a foundation model for cell biology</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">17 引用</span>
+          </div>
+          <div class="p-meta">Yanay Rosen, Yusuf Roohani, Ayush Agrawal et al … Jure Leskovec · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-026-10689-z" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">3,600 万细胞、8 物种、33 层/6.5 亿参数的通用细胞嵌入；无需微调即可跨物种/跨组织嵌入，构建覆盖 1,000+ 细胞类型的 Integrated Mega-scale Atlas；正式版 2026 年发表于 Nature（预印本 2023，已有 160+ 引用）。</p>
+          <p class="p-extra">OpenAlex 对 2026 正式版仅计 17 次引用；2023 预印本已有 164 次引用，评估影响力时应合并看。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2026_Rosen_UCE.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">25 页 · 22.8 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 2026 混合 OA（正式版）；2023 预印本另见 bioRxiv</span>
+          </div>
+        </article>
+        <article class="paper" id="p-state">
+          <div class="p-top">
+            <span class="p-year">2026</span>
+            <h4 class="p-title">Predicting cellular responses to perturbation across diverse contexts with State</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">96 引用</span>
+          </div>
+          <div class="p-meta">Abhinav Adduri, Dhruv Gautam, Beatrice Bevilacqua et al … Yusuf Roohani · <b>Cell</b> · <a href="https://doi.org/10.1016/j.cell.2026.07.052" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">扰动响应预测模型：SE 学嵌入、ST 学状态转移，用集合注意力处理细胞异质性；在 Tahoe-100M 上效应区分度提升 30%+，DEG 识别显著优于基线，并提出 Cell-Eval 评测框架。</p>
+          <p class="p-extra">Cell 2026 正式版；预印本 2025-06 发布，OpenAlex 引用 96 次。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2026_Adduri_State.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">66 页 · 30.3 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">Cell 2026 订阅制；bioRxiv 预印本（66 页，含补充材料）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-cellfm">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">CellFM: a large-scale foundation model pre-trained on transcriptomics of 100 million human cells</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">88 引用</span>
+          </div>
+          <div class="p-meta">Yuansong Zeng, Jiancong Xie, Ningyuan Shangguan et al … Yuedong Yang · <b>Nature Communications</b> · <a href="https://doi.org/10.1038/s41467-025-59926-5" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1 亿人类细胞、8 亿参数、RetNet 主干；在华为 MindSpore + 昇腾 910 上训练，注释、扰动预测与基因功能任务优于同期模型，代表国产算力栈的大规模单细胞模型。</p>
+          <p class="p-extra">论文为 CC BY-NC-ND；商用需单独确认许可。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/03_单细胞与转录组/2025_Zeng_CellFM.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">17 页 · 4.1 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Communications 金色 OA</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-pathology">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Pathology &amp; medical imaging</div>
+          <h3>空间与病理影像 <span class="count">4 篇</span></h3>
+        </div>
+        <p class="theme-blurb">全切片 + 图文对齐 + 临床级评测。基础模型已成为数字病理的默认底座，并开始向「临床级」与「少样本」迁移。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>UNI 用 1 亿图像块证明「病理 ImageNet 时刻」；CONCH 把病理图像与报告文本对齐；Prov-GigaPath 直接建模整张切片；RETFound 则展示了视网膜影像的标签高效迁移。</div>
+      
+        <article class="paper" id="p-uni">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Towards a general-purpose foundation model for computational pathology</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,523 引用</span>
+          </div>
+          <div class="p-meta">Richard J. Chen, Tong Ding, Ming Y. Lu et al … Faisal Mahmood · <b>Nature Medicine</b> · <a href="https://doi.org/10.1038/s41591-024-02857-3" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1 亿+ 图像块、10 万+ H&amp;E 全切片、20 种组织；自监督预训练，在 34 项病理任务上达到 SOTA，支持少样本与分辨率无关分类，是病理基础模型的代表。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/04_空间与病理影像/2024_Chen_UNI.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">81 页 · 13.4 MB</span>
+            <span class="v-badge v-pmc">PMC 全文</span>
+            <span class="p-note">Nature Medicine 订阅制；PMC 作者稿渲染（81 页）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-conch">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">A visual-language foundation model for computational pathology</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">948 引用</span>
+          </div>
+          <div class="p-meta">Ming Y. Lu, Bowen Chen, Drew F. K. Williamson et al … Faisal Mahmood · <b>Nature Medicine</b> · <a href="https://doi.org/10.1038/s41591-024-02856-4" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">视觉—语言病理基础模型：1.17M 图像—文本对对比学习；在 14 项任务（分类、分割、captioning、检索）上达到 SOTA，支持零样本与文本提示，把病理模型从「看图」推进到「图文对齐」。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/04_空间与病理影像/2024_Lu_CONCH.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">64 页 · 15.0 MB</span>
+            <span class="v-badge v-pmc">PMC 全文</span>
+            <span class="p-note">Nature Medicine 订阅制；PMC 作者稿渲染（64 页）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-provgigapath">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">A whole-slide foundation model for digital pathology from real-world data</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">901 引用</span>
+          </div>
+          <div class="p-meta">Hanwen Xu, Naoto Usuyama, Jaspreet Bagga et al … Hoifung Poon · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-024-07441-w" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1.3B 个 256×256 图像块、171k 张全切片、30k+ 患者、31 种组织；GigaPath 多尺度 ViT 直接建模整张切片，在癌症分类与突变预测等 9 项任务上验证。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/04_空间与病理影像/2024_Xu_ProvGigaPath.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">22 页 · 4.8 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA</span>
+          </div>
+        </article>
+        <article class="paper" id="p-retfound">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">A foundation model for generalizable disease detection from retinal images</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">988 引用</span>
+          </div>
+          <div class="p-meta">Yukun Zhou, Mark A. Chia, Siegfried K. Wagner et al … Pearse Andrew Keane · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06555-x" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1.6M 无标签视网膜图像自监督预训练；标签高效迁移到眼病与系统性疾病（糖尿病、心血管等），是视网膜影像基础模型的代表，展示「基础模型 + 少量标注」的临床潜力。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/04_空间与病理影像/2023_Zhou_RETFound.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">26 页 · 21.1 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature 混合 OA</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-drug">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Drug discovery &amp; molecule generation</div>
+          <h3>药物发现与分子生成 <span class="count">3 篇</span></h3>
+        </div>
+        <p class="theme-blurb">可解释性、靶点感知、扩散对接。评价标准从「生成得像」转向「可合成、可验证、有活性」。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>Antibiotic 用可解释 GNN 找到新结构类抗生素并在小鼠验证；TamGen 把 GPT 式化学语言模型接到真实靶点与管线；DiffDock 把对接变成扩散生成问题。</div>
+      
+        <article class="paper" id="p-antibiotic">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">Discovery of a structural class of antibiotics with explainable deep learning</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">463 引用</span>
+          </div>
+          <div class="p-meta">Felix J. Wong, Erica J. Zheng, Jacqueline A. Valeri et al … James J. Collins · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06887-8" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">可解释图神经网络：39,312 个化合物的活性/细胞毒性数据，预测 1,200 万化合物；发现新的结构类抗生素（对金黄色葡萄球菌有效），并在小鼠感染模型验证，展示「可解释 DL → 新化学空间」。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/05_药物发现与分子生成/2024_Wong_Antibiotic.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">66 页 · 11.2 MB</span>
+            <span class="v-badge v-pmc">PMC 全文</span>
+            <span class="p-note">Nature 订阅制；PMC 作者稿渲染（66 页）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-tamgen">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">TamGen: drug design with target-aware molecule generation through a chemical language model</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">79 引用</span>
+          </div>
+          <div class="p-meta">Kehan Wu, Yingce Xia, Pan Deng et al … Tie‐Yan Liu · <b>Nature Communications</b> · <a href="https://doi.org/10.1038/s41467-024-53632-4" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">GPT 式化学语言模型 + 靶点感知：针对特定蛋白生成与优化分子；在结核病 ClpP 蛋白酶上发现 14 个有抑制活性的化合物，最佳 IC50 1.9 μM，并嵌入真实药物发现管线。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/05_药物发现与分子生成/2024_Wu_TamGen.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">12 页 · 1.9 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Communications 金色 OA</span>
+          </div>
+        </article>
+        <article class="paper" id="p-diffdock">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">DiffDock: Diffusion Steps, Twists, and Turns for Molecular Docking</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">364 引用</span>
+          </div>
+          <div class="p-meta">Gabriele Corso, Hannes Stärk, Bowen Jing et al … Tommi Jaakkola · <b>arXiv (Cornell University)</b> · <a href="https://doi.org/10.48550/arxiv.2210.01776" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">把分子对接建模为配体自由度（平移、旋转、扭转）流形上的扩散生成；无需传统搜索即可预测结合构象，显著提升 top-1 成功率，开创扩散式 docking 路线。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/05_药物发现与分子生成/2023_Corso_DiffDock.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">29 页 · 5.7 MB</span>
+            <span class="v-badge v-pre">arXiv</span>
+            <span class="p-note">ICLR 2023 正式版；arXiv 预印本（2022）</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-llm">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Biomedical LLMs &amp; agents</div>
+          <h3>生物医学大模型与 Agent <span class="count">4 篇</span></h3>
+        </div>
+        <p class="theme-blurb">从「医学问答」到「自主 Agent + 多模态细胞对话」。工具调用、可验证性与临床安全性是关键。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>BioGPT 是早期生物医学生成式 LLM；Med-PaLM 2 把医学问答推到专家级；Biomni 把 LLM 变成能调用工具/数据库/代码的「虚拟生物学家」；CellWhisperer 则让单细胞数据可以用自然语言对话。</div>
+      
+        <article class="paper" id="p-biogpt">
+          <div class="p-top">
+            <span class="p-year">2022</span>
+            <h4 class="p-title">BioGPT: generative pre-trained transformer for biomedical text generation and mining</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,138 引用</span>
+          </div>
+          <div class="p-meta">Renqian Luo, Liai Sun, Yingce Xia et al … Tie‐Yan Liu · <b>Briefings in Bioinformatics</b> · <a href="https://doi.org/10.1093/bib/bbac409" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">在 1,500 万 PubMed 摘要上预训练的生成式 Transformer；支持生物医学文本生成与挖掘（关系抽取、QA），是早期生物医学生成式 LLM 的代表，为后续生物医学 LLM 生态奠基。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/06_生物医学大模型与Agent/2022_Luo_BioGPT.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">12 页 · 0.9 MB</span>
+            <span class="v-badge v-pre">arXiv</span>
+            <span class="p-note">Briefings in Bioinformatics 订阅制；arXiv 预印本</span>
+          </div>
+        </article>
+        <article class="paper" id="p-medpalm2">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Toward expert-level medical question answering with large language models</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">977 引用</span>
+          </div>
+          <div class="p-meta">Karan Singhal, Tao Tu, Juraj Gottweis et al … Vivek Natarajan · <b>Nature Medicine</b> · <a href="https://doi.org/10.1038/s41591-024-03423-7" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">医学 LLM：base 改进 + 医学微调 + ensemble refinement + chain of retrieval；MedQA 最高 86.5%，在 MedMCQA/PubMedQA/MMLU 临床题上大幅提升；医生在 8/9 个临床维度上更偏好其回答。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/06_生物医学大模型与Agent/2025_Singhal_MedPaLM2.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">20 页 · 2.7 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Medicine 混合 OA</span>
+          </div>
+        </article>
+        <article class="paper" id="p-biomni">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Biomni: A General-Purpose Biomedical AI Agent</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">123 引用</span>
+          </div>
+          <div class="p-meta">Kexin Huang, Serena Zhang, Hanchen Wang et al … Jure Leskovec · <b>bioRxiv (Cold Spring Harbor Laboratory)</b> · <a href="https://doi.org/10.1101/2025.05.30.656746" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">通用生物医学 AI agent：先从数万篇论文中挖掘工具/数据库/协议，构建统一 action space；再用 LLM 推理 + 检索规划 + 代码执行自主完成因果基因排序、药物重定位、罕见病诊断等任务。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/06_生物医学大模型与Agent/2025_Huang_Biomni.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">28 页 · 4.5 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">目前仅有 bioRxiv 预印本</span>
+          </div>
+        </article>
+        <article class="paper" id="p-cellwhisperer">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Multimodal learning enables chat-based exploration of single-cell data</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">34 引用</span>
+          </div>
+          <div class="p-meta">Moritz Schaefer, Peter Peneder, Daniel Malzl et al … Christoph Bock · <b>Nature Biotechnology</b> · <a href="https://doi.org/10.1038/s41587-025-02857-9" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">单细胞转录组—文本多模态对比嵌入（100 万表达谱 + AI 生成描述）；接入 LLM 实现对话式细胞查询与零样本细胞类型注释，降低单细胞数据解释门槛。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/06_生物医学大模型与Agent/2025_Schaefer_CellWhisperer.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">25 页 · 4.3 MB</span>
+            <span class="v-badge v-pub">出版社版</span>
+            <span class="p-note">Nature Biotechnology 混合 OA</span>
+          </div>
+        </article>
+    </section>
+    <section class="theme" id="t-virtual">
+      <div class="theme-head">
+        <div>
+          <div class="theme-kicker">Virtual cell &amp; overview</div>
+          <h3>虚拟细胞与总览 <span class="count">4 篇</span></h3>
+        </div>
+        <p class="theme-blurb">虚拟细胞从愿景变成可评测任务；数据（Tahoe-100M）与评测（Cell-Eval）比模型本身更稀缺。</p>
+      </div>
+      <div class="takeaway"><b>这一组的主线：</b>AIVC 定义了「虚拟细胞」的问题空间；Tahoe-100M 提供了 1 亿细胞的扰动数据；TranscriptFormer 用 12 物种做跨物种生成；SciPhi 则给出 AI4Science 的整体框架。</div>
+      
+        <article class="paper" id="p-aivc">
+          <div class="p-top">
+            <span class="p-year">2024</span>
+            <h4 class="p-title">How to build the virtual cell with artificial intelligence: Priorities and opportunities</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">409 引用</span>
+          </div>
+          <div class="p-meta">Charlotte Bunne, Yusuf Roohani, Yanay Rosen et al … Stephen R. Quake · <b>Cell</b> · <a href="https://doi.org/10.1016/j.cell.2024.11.015" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">AI 虚拟细胞的愿景与路线图：多尺度、多模态、可模拟的细胞模型；提出通用表征、预测动力学、可在计算机上做实验的三阶段目标，定义「虚拟细胞」的问题空间与全球协作方式。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/07_虚拟细胞与总览/2024_Bunne_AIVC.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">53 页 · 4.5 MB</span>
+            <span class="v-badge v-pmc">PMC 全文</span>
+            <span class="p-note">Cell 开放获取最终版（PMC12148494）页面打印；内容为最终版，排版非出版社原版（53 页）</span>
+          </div>
+        </article>
+        <article class="paper" id="p-tahoe">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">Tahoe-100M : A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">107 引用</span>
+          </div>
+          <div class="p-meta">Jesse M. Zhang, Airol A. Ubas, Richard de Borja et al … Johnny X. Yu · <b>bioRxiv (Cold Spring Harbor Laboratory)</b> · <a href="https://doi.org/10.1101/2025.02.20.639398" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1 亿细胞、1,100 种小分子、50 个癌细胞系的扰动图谱；Mosaic 平台降低批次效应，是当时最大的单细胞扰动数据集，为扰动预测与虚拟细胞提供数据基础。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/07_虚拟细胞与总览/2025_Zhang_Tahoe100M.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">27 页 · 24.2 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">bioRxiv v3；数据集与模型另见 Arc Virtual Cell Atlas</span>
+          </div>
+        </article>
+        <article class="paper" id="p-transcriptformer">
+          <div class="p-top">
+            <span class="p-year">2025</span>
+            <h4 class="p-title">A Cross-Species Generative Cell Atlas Across 1.5 Billion Years of Evolution: The TranscriptFormer Single-cell Model</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">31 引用</span>
+          </div>
+          <div class="p-meta">James D Pearce, Sara E. Simmonds, Gita Mahmoudabadi et al … Theofanis Karaletsos · <b>bioRxiv (Cold Spring Harbor Laboratory)</b> · <a href="https://doi.org/10.1101/2025.04.25.650731" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">1.12 亿细胞、12 物种、15.3 亿年进化跨度的生成式细胞图谱；联合建模基因身份与表达，零样本跨物种细胞类型分类与疾病状态识别，MIT 许可，工程可用性高。</p>
+          <p class="p-extra">Science 2026 正式版；此处为 2025 bioRxiv v2，引用 31 次。</p>
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/07_虚拟细胞与总览/2025_Pearce_TranscriptFormer.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">37 页 · 5.4 MB</span>
+            <span class="v-badge v-pre">预印本</span>
+            <span class="p-note">Science 2026 订阅制；bioRxiv v2 预印本</span>
+          </div>
+        </article>
+        <article class="paper" id="p-sciphi">
+          <div class="p-top">
+            <span class="p-year">2023</span>
+            <h4 class="p-title">Scientific discovery in the age of artificial intelligence</h4>
+            <span class="p-cites" title="OpenAlex 引用量（2026-10-21）">1,798 引用</span>
+          </div>
+          <div class="p-meta">Hanchen Wang, Tianfan Fu, Yuanqi Du et al … Marinka Žitnik · <b>Nature</b> · <a href="https://doi.org/10.1038/s41586-023-06221-2" target="_blank" rel="noopener">DOI</a></div>
+          <p class="p-contrib">系统综述 AI 在科学发现中的角色：自监督学习、几何深度学习、生成式模型如何参与假设生成、实验设计与数据解释；讨论数据质量、可解释性与评估，是 AI4Science 的框架性文献。</p>
+          
+          <div class="p-foot">
+            <a class="pdf-btn" href="papers/07_虚拟细胞与总览/2023_Wang_AI4Science.pdf" target="_blank" rel="noopener">打开 PDF</a>
+            <span class="p-info">38 页 · 3.2 MB</span>
+            <span class="v-badge v-pub">机构库版</span>
+            <span class="p-note">Nature 订阅制；MIT DSpace 机构库版本（38 页）</span>
+          </div>
+        </article>
+    </section>
+</section>
+
+<section id="s4">
+  <h2><span class="no">04</span>下载与归档：32/32 校验通过</h2>
+  <p class="lede">所有可公开获取的全文已下载到 <code>papers/</code>，按主题分 7 个目录；文件名统一为「年份_第一作者_短标题.pdf」，便于按字母/年份排序。每篇 PDF 都用 pypdf 校验过页数与可打开性。</p>
+  <div class="grid g2">
+    <div class="card">
+      <h4 style="margin-top:0">目录结构</h4>
+      <div class="tree">
+<span class="d">papers/</span>
+├── <span class="d">01_蛋白质结构与生成/</span> <span class="c">(6 篇, 77.5 MB)</span>
+├── <span class="d">02_基因组与调控/</span> <span class="c">(5 篇, 107.7 MB)</span>
+├── <span class="d">03_单细胞与转录组/</span> <span class="c">(6 篇, 86.9 MB)</span>
+├── <span class="d">04_空间与病理影像/</span> <span class="c">(4 篇, 54.2 MB)</span>
+├── <span class="d">05_药物发现与分子生成/</span> <span class="c">(3 篇, 18.8 MB)</span>
+├── <span class="d">06_生物医学大模型与Agent/</span> <span class="c">(4 篇, 12.3 MB)</span>
+├── <span class="d">07_虚拟细胞与总览/</span> <span class="c">(4 篇, 37.3 MB)</span>
+├── <span class="n">MANIFEST.csv</span> <span class="c">机器可读清单</span>
+└── <span class="n">MANIFEST.md</span> <span class="c">人读清单（含链接）</span>
+      </div>
+      <p class="small" style="margin-top:10px">总大小 394.7 MB；单篇最大为 AlphaGenome（67.1 MB，31 页，含高分辨率图）。</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">校验与命名</h4>
+      <ul>
+        <li><strong>校验：</strong>32/32 均以 <code>%PDF</code> 开头、pypdf 可打开、页数 &gt; 0；记录 SHA256 前 16 位。</li>
+        <li><strong>命名：</strong><code>YYYY_FirstAuthor_ShortTitle.pdf</code>，例如 <code>2024_Abramson_AlphaFold3.pdf</code>。</li>
+        <li><strong>清单：</strong><code>MANIFEST.csv</code> 含标题、作者、年份、来源、DOI、引用量、页数、大小、版本类型；<code>MANIFEST.md</code> 可直接在编辑器里点开 PDF。</li>
+        <li><strong>版本：</strong>出版社版 / 预印本 / PMC 作者稿 / 机构库 / arXiv 五种，PDF 卡片上有颜色标记。</li>
+      </ul>
+      <div class="callout c-teal" style="margin-bottom:0">
+        <div class="t">◆ 获取结果</div>
+        <p>32 篇全部取得可读全文；<strong>0 篇完全失败</strong>。其中 16 篇为出版社/机构库原版 PDF，16 篇为预印本/作者稿/页面打印（原因见下一节）。</p>
+      </div>
+    </div>
+  </div>
+  <p class="small">注：PDF 总体积约 395 MB，主要来自 Nature/Science 的高分辨率图与 PMC 全文渲染。若只需文字，可用 <code>pdftotext</code> 或 PyMuPDF 提取，不必逐篇打印。</p>
+</section>
+
+<section id="s5">
+  <h2><span class="no">05</span>版本限制：16 篇不是出版社原版 PDF</h2>
+  <p class="lede">「能下载全文」不等于「拿到了出版社原版 PDF」。下面逐条列出这 16 篇的目标版本、实际获取版本与原因，避免后续引用时把预印本当成正式版。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>第一作者</th><th>论文</th><th>目标版本</th><th>实际获取</th><th>原因 / 说明</th></tr></thead>
+      <tbody><tr><td class="name">Charlotte Bunne</td><td>How to build the virtual cell with artificial intelligence: Priorities and opportunities</td><td class="nw">出版社版</td><td class="nw">PMC OA 全文</td><td>Cell 开放获取最终版（PMC12148494）页面打印；内容为最终版，排版非出版社原版（53 页）</td></tr><tr><td class="name">Felix J. Wong</td><td>Discovery of a structural class of antibiotics with explainable deep learning</td><td class="nw">出版社版</td><td class="nw">PMC 作者稿</td><td>Nature 订阅制；PMC 作者稿渲染（66 页）</td></tr><tr><td class="name">Renqian Luo</td><td>BioGPT: generative pre-trained transformer for biomedical text generation and mining</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Briefings in Bioinformatics 订阅制；arXiv 预印本</td></tr><tr><td class="name">Kexin Huang</td><td>Biomni: A General-Purpose Biomedical AI Agent</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>目前仅有 bioRxiv 预印本</td></tr><tr><td class="name">Saro Passaro</td><td>Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>目前仅有 bioRxiv 预印本，无期刊正式版</td></tr><tr><td class="name">Ming Y. Lu</td><td>A visual-language foundation model for computational pathology</td><td class="nw">出版社版</td><td class="nw">PMC 作者稿</td><td>Nature Medicine 订阅制；PMC 作者稿渲染（64 页）</td></tr><tr><td class="name">Gabriele Corso</td><td>DiffDock: Diffusion Steps, Twists, and Turns for Molecular Docking</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>ICLR 2023 正式版；arXiv 预印本（2022）</td></tr><tr><td class="name">Thomas Hayes</td><td>Simulating 500 million years of evolution with a language model</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Science 2025 订阅制；采用 bioRxiv 预印本（正式版可能有差异）</td></tr><tr><td class="name">Eric Nguyen</td><td>Sequence modeling and design from molecular to genome scale with Evo</td><td class="nw">出版社版</td><td class="nw">PMC 作者稿</td><td>Science 订阅制；PMC 作者稿渲染（75 页，含参考文献与补充材料）</td></tr><tr><td class="name">Rohith Krishna</td><td>Generalized biomolecular modeling and design with RoseTTAFold All-Atom</td><td class="nw">出版社版</td><td class="nw">Science 页面</td><td>Science 订阅制；用公开可访问的 HTML 全文打印为 PDF</td></tr><tr><td class="name">Minsheng Hao</td><td>Large-scale foundation model on single-cell transcriptomics</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Nature Methods 订阅制；bioRxiv 预印本</td></tr><tr><td class="name">Haotian Cui</td><td>scGPT: toward building a foundation model for single-cell multi-omics using generative AI</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Nature Methods 订阅制；bioRxiv v1（2023-05-01）</td></tr><tr><td class="name">Abhinav Adduri</td><td>Predicting cellular responses to perturbation across diverse contexts with State</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Cell 2026 订阅制；bioRxiv 预印本（66 页，含补充材料）</td></tr><tr><td class="name">Jesse M. Zhang</td><td>Tahoe-100M : A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>bioRxiv v3；数据集与模型另见 Arc Virtual Cell Atlas</td></tr><tr><td class="name">James D Pearce</td><td>A Cross-Species Generative Cell Atlas Across 1.5 Billion Years of Evolution: The TranscriptFormer Single-cell Model</td><td class="nw">期刊版</td><td class="nw">预印本/arXiv</td><td>Science 2026 订阅制；bioRxiv v2 预印本</td></tr><tr><td class="name">Richard J. Chen</td><td>Towards a general-purpose foundation model for computational pathology</td><td class="nw">出版社版</td><td class="nw">PMC 作者稿</td><td>Nature Medicine 订阅制；PMC 作者稿渲染（81 页）</td></tr></tbody>
+    </table>
+  </div>
+  <div class="callout c-rose">
+    <div class="t">▲ 引用时的三条建议</div>
+    <p>① 引用<b>具体数字/结论</b>时，优先核对出版社最终版（尤其是预印本之后有修订的：State、TranscriptFormer、ESM3、scGPT）；② 引用<b>方法/架构</b>时，预印本通常足够，但需标注「preprint」；③ PMC 渲染版含期刊页眉与参考文献，页码与出版社版不一致，引用页码时不要直接用 PDF 页码。</p>
+  </div>
+  <p class="small">为什么没有「完全无法下载」的文献？因为本报告在筛选阶段就把「至少有一个公开全文来源」作为软约束；遇到只有订阅版的工作，会用 PMC 作者稿、机构库或预印本替代，而不是放弃。真正没有任何公开全文的候选（如部分厂商技术报告）已在初筛阶段排除。</p>
+</section>
+
+<section id="s6">
+  <h2><span class="no">06</span>精读路线：三条 Track</h2>
+  <p class="lede">32 篇不必按顺序读。下面给三条路线，分别对应「想做结构/设计」「想做基因组/单细胞」「想做应用/系统」的读者。每条路线 8–12 篇，按「先读—再读—精读」排序。</p>
+  <div class="route">
+    <div class="rc"><div class="h">TRACK A · 结构与设计</div><div class="b"><b>先读：</b>AlphaFold3 → RFdiffusion<br><b>再读：</b>Chroma → RoseTTAFold All-Atom<br><b>精读：</b>ESM3 → Boltz-2<br><b>关键问题：</b>共折叠的物理约束从哪来？生成模型如何保证可设计/可合成？亲和力预测能否替代 FEP？</div></div>
+    <div class="rc"><div class="h">TRACK B · 基因组与单细胞</div><div class="b"><b>先读：</b>Enformer → Borzoi → AlphaGenome<br><b>再读：</b>Evo → Geneformer → scGPT<br><b>精读：</b>scFoundation → UCE → State → CellFM<br><b>关键问题：</b>长序列与单碱基如何兼得？zero-shot 到底输在哪？扰动数据为什么比观测数据更值钱？</div></div>
+    <div class="rc"><div class="h">TRACK C · 应用与系统</div><div class="b"><b>先读：</b>UNI → CONCH → Prov-GigaPath → RETFound<br><b>再读：</b>Antibiotic → TamGen → DiffDock<br><b>精读：</b>Med-PaLM 2 → Biomni → CellWhisperer → AIVC → Tahoe-100M → TranscriptFormer<br><b>关键问题：</b>基础模型如何进入真实工作流？湿实验验证的闭环怎么建？Agent 的可靠性如何评估？</div></div>
+  </div>
+  <div class="callout c-amber">
+    <div class="t">△ 每篇论文建议只回答三个问题</div>
+    <p>① 它把什么问题定义成了可学习的问题？② 它的「强基线」是什么，真的赢了吗？③ 它的数据/代码/评测是否足以让你复现一个最小实验？把这三问写在笔记里，比逐段翻译更有效。</p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="no">07</span>方法与局限</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h4 style="margin-top:0">数据来源</h4>
+      <ul>
+        <li><b>元数据/引用：</b>OpenAlex Works API（DOI 精确匹配；引用量为 2026-10-21 快照）。</li>
+        <li><b>全文状态：</b>Europe PMC REST（PMCID、OA 状态、全文链接）、bioRxiv API（版本/日期）、arXiv。</li>
+        <li><b>PDF 获取：</b>Nature 出版社 PDF、eScholarship、MIT DSpace、PMC 页面、Science 页面、bioRxiv/arXiv。</li>
+        <li><b>校验：</b>pypdf + PyMuPDF 双查页数；文件头 <code>%PDF</code>；SHA256 前 16 位入库。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">已知局限</h4>
+      <ul>
+        <li><b>引用量有时滞：</b>2026 年论文（UCE、State、AlphaGenome）引用被严重低估；本报告用「预印本引用 + 社区采用」补充判断，但无法完全消除偏差。</li>
+        <li><b>年份口径：</b>以首次公开/预印本为准，部分论文的期刊卷期晚一年（如 Antibiotic 在线 2023、卷期 2024）。</li>
+        <li><b>覆盖面：</b>32 篇无法覆盖 AI+生物的全部子领域（如合成生物学、脑机接口、AI 病理之外的影像组学、农业/生态 AI 未纳入）。</li>
+        <li><b>版本差异：</b>8 篇为预印本，结论/数字可能与正式版不同；已在第 05 节逐条标注。</li>
+      </ul>
+    </div>
+  </div>
+  <p class="small">检索关键词：protein design、AlphaFold3、ESM3、RFdiffusion、genome language model、Enformer、AlphaGenome、Evo、single-cell foundation model、scGPT、Geneformer、virtual cell、perturbation prediction、pathology foundation model、biomedical AI agent、drug discovery。</p>
+</section>
+
+<section id="s8">
+  <h2><span class="no">08</span>完整索引：32 个 PDF</h2>
+  <p class="lede">按文件夹顺序排列，点击标题可直接打开 PDF。页数与大小为实际文件校验结果。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>年份</th><th>第一作者</th><th>标题（点击打开 PDF）</th><th>来源</th><th>页数</th><th>MB</th><th>版本</th></tr></thead>
+      <tbody><tr><td>1</td><td>2024</td><td class="name">Josh Abramson</td><td><a href="papers/01_蛋白质结构与生成/2024_Abramson_AlphaFold3.pdf" target="_blank" rel="noopener">Accurate structure prediction of biomolecular interactions with AlphaFold 3</a></td><td>Nature</td><td>24</td><td>8.2</td><td>出版社版</td></tr><tr><td>2</td><td>2023</td><td class="name">Joseph L. Watson</td><td><a href="papers/01_蛋白质结构与生成/2023_Watson_RFdiffusion.pdf" target="_blank" rel="noopener">De novo design of protein structure and function with RFdiffusion</a></td><td>Nature</td><td>38</td><td>34.7</td><td>出版社版</td></tr><tr><td>3</td><td>2023</td><td class="name">John Ingraham</td><td><a href="papers/01_蛋白质结构与生成/2023_Ingraham_Chroma.pdf" target="_blank" rel="noopener">Illuminating protein space with a programmable generative model</a></td><td>Nature</td><td>15</td><td>8.1</td><td>出版社版</td></tr><tr><td>4</td><td>2024</td><td class="name">Rohith Krishna</td><td><a href="papers/01_蛋白质结构与生成/2024_Krishna_RoseTTAFoldAllAtom.pdf" target="_blank" rel="noopener">Generalized biomolecular modeling and design with RoseTTAFold All-Atom</a></td><td>Science</td><td>17</td><td>8.0</td><td>Science 全文</td></tr><tr><td>5</td><td>2025</td><td class="name">Thomas Hayes</td><td><a href="papers/01_蛋白质结构与生成/2025_Hayes_ESM3.pdf" target="_blank" rel="noopener">Simulating 500 million years of evolution with a language model</a></td><td>Science</td><td>68</td><td>11.5</td><td>预印本</td></tr><tr><td>6</td><td>2025</td><td class="name">Saro Passaro</td><td><a href="papers/01_蛋白质结构与生成/2025_Passaro_Boltz2.pdf" target="_blank" rel="noopener">Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction</a></td><td>bioRxiv (Cold Spring Harbor Laboratory)</td><td>55</td><td>7.0</td><td>预印本</td></tr><tr><td>7</td><td>2021</td><td class="name">Žiga Avsec</td><td><a href="papers/02_基因组与调控/2021_Avsec_Enformer.pdf" target="_blank" rel="noopener">Effective gene expression prediction from sequence by integrating long-range interactions</a></td><td>Nature Methods</td><td>24</td><td>18.2</td><td>出版社版</td></tr><tr><td>8</td><td>2025</td><td class="name">Johannes Linder</td><td><a href="papers/02_基因组与调控/2025_Linder_Borzoi.pdf" target="_blank" rel="noopener">Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation</a></td><td>Nature Genetics</td><td>34</td><td>13.2</td><td>出版社版</td></tr><tr><td>9</td><td>2026</td><td class="name">Žiga Avsec</td><td><a href="papers/02_基因组与调控/2026_Avsec_AlphaGenome.pdf" target="_blank" rel="noopener">Advancing regulatory variant effect prediction with AlphaGenome</a></td><td>Nature</td><td>31</td><td>67.1</td><td>出版社版</td></tr><tr><td>10</td><td>2024</td><td class="name">Eric Nguyen</td><td><a href="papers/02_基因组与调控/2024_Nguyen_Evo.pdf" target="_blank" rel="noopener">Sequence modeling and design from molecular to genome scale with Evo</a></td><td>Science</td><td>75</td><td>4.7</td><td>PMC 全文</td></tr><tr><td>11</td><td>2024</td><td class="name">Hugo Dalla-Torre</td><td><a href="papers/02_基因组与调控/2024_DallaTorre_NucleotideTransformer.pdf" target="_blank" rel="noopener">Nucleotide Transformer: building and evaluating robust foundation models for human genomics</a></td><td>Nature Methods</td><td>20</td><td>4.5</td><td>出版社版</td></tr><tr><td>12</td><td>2023</td><td class="name">Christina V. Theodoris</td><td><a href="papers/03_单细胞与转录组/2023_Theodoris_Geneformer.pdf" target="_blank" rel="noopener">Transfer learning enables predictions in network biology</a></td><td>Nature</td><td>47</td><td>6.0</td><td>机构库版</td></tr><tr><td>13</td><td>2024</td><td class="name">Haotian Cui</td><td><a href="papers/03_单细胞与转录组/2024_Cui_scGPT.pdf" target="_blank" rel="noopener">scGPT: toward building a foundation model for single-cell multi-omics using generative AI</a></td><td>Nature Methods</td><td>36</td><td>18.4</td><td>预印本</td></tr><tr><td>14</td><td>2024</td><td class="name">Minsheng Hao</td><td><a href="papers/03_单细胞与转录组/2024_Hao_scFoundation.pdf" target="_blank" rel="noopener">Large-scale foundation model on single-cell transcriptomics</a></td><td>Nature Methods</td><td>25</td><td>5.2</td><td>预印本</td></tr><tr><td>15</td><td>2026</td><td class="name">Yanay Rosen</td><td><a href="papers/03_单细胞与转录组/2026_Rosen_UCE.pdf" target="_blank" rel="noopener">Universal cell embedding provides a foundation model for cell biology</a></td><td>Nature</td><td>25</td><td>22.8</td><td>出版社版</td></tr><tr><td>16</td><td>2026</td><td class="name">Abhinav Adduri</td><td><a href="papers/03_单细胞与转录组/2026_Adduri_State.pdf" target="_blank" rel="noopener">Predicting cellular responses to perturbation across diverse contexts with State</a></td><td>Cell</td><td>66</td><td>30.3</td><td>预印本</td></tr><tr><td>17</td><td>2025</td><td class="name">Yuansong Zeng</td><td><a href="papers/03_单细胞与转录组/2025_Zeng_CellFM.pdf" target="_blank" rel="noopener">CellFM: a large-scale foundation model pre-trained on transcriptomics of 100 million human cells</a></td><td>Nature Communications</td><td>17</td><td>4.1</td><td>出版社版</td></tr><tr><td>18</td><td>2024</td><td class="name">Richard J. Chen</td><td><a href="papers/04_空间与病理影像/2024_Chen_UNI.pdf" target="_blank" rel="noopener">Towards a general-purpose foundation model for computational pathology</a></td><td>Nature Medicine</td><td>81</td><td>13.4</td><td>PMC 全文</td></tr><tr><td>19</td><td>2024</td><td class="name">Ming Y. Lu</td><td><a href="papers/04_空间与病理影像/2024_Lu_CONCH.pdf" target="_blank" rel="noopener">A visual-language foundation model for computational pathology</a></td><td>Nature Medicine</td><td>64</td><td>15.0</td><td>PMC 全文</td></tr><tr><td>20</td><td>2024</td><td class="name">Hanwen Xu</td><td><a href="papers/04_空间与病理影像/2024_Xu_ProvGigaPath.pdf" target="_blank" rel="noopener">A whole-slide foundation model for digital pathology from real-world data</a></td><td>Nature</td><td>22</td><td>4.8</td><td>出版社版</td></tr><tr><td>21</td><td>2023</td><td class="name">Yukun Zhou</td><td><a href="papers/04_空间与病理影像/2023_Zhou_RETFound.pdf" target="_blank" rel="noopener">A foundation model for generalizable disease detection from retinal images</a></td><td>Nature</td><td>26</td><td>21.1</td><td>出版社版</td></tr><tr><td>22</td><td>2024</td><td class="name">Felix J. Wong</td><td><a href="papers/05_药物发现与分子生成/2024_Wong_Antibiotic.pdf" target="_blank" rel="noopener">Discovery of a structural class of antibiotics with explainable deep learning</a></td><td>Nature</td><td>66</td><td>11.2</td><td>PMC 全文</td></tr><tr><td>23</td><td>2024</td><td class="name">Kehan Wu</td><td><a href="papers/05_药物发现与分子生成/2024_Wu_TamGen.pdf" target="_blank" rel="noopener">TamGen: drug design with target-aware molecule generation through a chemical language model</a></td><td>Nature Communications</td><td>12</td><td>1.9</td><td>出版社版</td></tr><tr><td>24</td><td>2023</td><td class="name">Gabriele Corso</td><td><a href="papers/05_药物发现与分子生成/2023_Corso_DiffDock.pdf" target="_blank" rel="noopener">DiffDock: Diffusion Steps, Twists, and Turns for Molecular Docking</a></td><td>arXiv (Cornell University)</td><td>29</td><td>5.7</td><td>arXiv</td></tr><tr><td>25</td><td>2022</td><td class="name">Renqian Luo</td><td><a href="papers/06_生物医学大模型与Agent/2022_Luo_BioGPT.pdf" target="_blank" rel="noopener">BioGPT: generative pre-trained transformer for biomedical text generation and mining</a></td><td>Briefings in Bioinformatics</td><td>12</td><td>0.9</td><td>arXiv</td></tr><tr><td>26</td><td>2025</td><td class="name">Karan Singhal</td><td><a href="papers/06_生物医学大模型与Agent/2025_Singhal_MedPaLM2.pdf" target="_blank" rel="noopener">Toward expert-level medical question answering with large language models</a></td><td>Nature Medicine</td><td>20</td><td>2.7</td><td>出版社版</td></tr><tr><td>27</td><td>2025</td><td class="name">Kexin Huang</td><td><a href="papers/06_生物医学大模型与Agent/2025_Huang_Biomni.pdf" target="_blank" rel="noopener">Biomni: A General-Purpose Biomedical AI Agent</a></td><td>bioRxiv (Cold Spring Harbor Laboratory)</td><td>28</td><td>4.5</td><td>预印本</td></tr><tr><td>28</td><td>2025</td><td class="name">Moritz Schaefer</td><td><a href="papers/06_生物医学大模型与Agent/2025_Schaefer_CellWhisperer.pdf" target="_blank" rel="noopener">Multimodal learning enables chat-based exploration of single-cell data</a></td><td>Nature Biotechnology</td><td>25</td><td>4.3</td><td>出版社版</td></tr><tr><td>29</td><td>2024</td><td class="name">Charlotte Bunne</td><td><a href="papers/07_虚拟细胞与总览/2024_Bunne_AIVC.pdf" target="_blank" rel="noopener">How to build the virtual cell with artificial intelligence: Priorities and opportunities</a></td><td>Cell</td><td>53</td><td>4.5</td><td>PMC 全文</td></tr><tr><td>30</td><td>2025</td><td class="name">Jesse M. Zhang</td><td><a href="papers/07_虚拟细胞与总览/2025_Zhang_Tahoe100M.pdf" target="_blank" rel="noopener">Tahoe-100M : A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling</a></td><td>bioRxiv (Cold Spring Harbor Laboratory)</td><td>27</td><td>24.2</td><td>预印本</td></tr><tr><td>31</td><td>2025</td><td class="name">James D Pearce</td><td><a href="papers/07_虚拟细胞与总览/2025_Pearce_TranscriptFormer.pdf" target="_blank" rel="noopener">A Cross-Species Generative Cell Atlas Across 1.5 Billion Years of Evolution: The TranscriptFormer Single-cell Model</a></td><td>bioRxiv (Cold Spring Harbor Laboratory)</td><td>37</td><td>5.4</td><td>预印本</td></tr><tr><td>32</td><td>2023</td><td class="name">Hanchen Wang</td><td><a href="papers/07_虚拟细胞与总览/2023_Wang_AI4Science.pdf" target="_blank" rel="noopener">Scientific discovery in the age of artificial intelligence</a></td><td>Nature</td><td>38</td><td>3.2</td><td>机构库版</td></tr></tbody>
+    </table>
+  </div>
+  <p class="small">配套文件：<code>papers/MANIFEST.csv</code>（机器可读）、<code>papers/MANIFEST.md</code>（人读）、<code>README.md</code>（本目录说明）。</p>
+</section>
+
+</main>
+
+<footer><div class="inner">
+  <p><b>AI + 生物：重要论文调研与全文归档</b> · v1.0 · 2026-10-22</p>
+  <p>本报告用于个人/团队研究与精读，不构成对论文结论的独立复现。PDF 版权归原作者/出版方所有，请遵守各期刊的许可与合理使用条款；预印本与正式版可能不一致，引用前请核对 version of record。</p>
+</div></footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  function onScroll(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;
+    bar.style.width=(m>0?(h.scrollTop||document.body.scrollTop)/m*100:0)+'%';}
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  var links=[].slice.call(document.querySelectorAll('nav.top a[href^="#"]'));
+  var targets=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  function spy(){var y=window.scrollY+110,idx=0;
+    for(var i=0;i<targets.length;i++){if(targets[i].offsetTop<=y)idx=i;}
+    links.forEach(function(a,i){a.classList.toggle('active',i===idx)});}
+  document.addEventListener('scroll',spy,{passive:true});spy();
+})();
+</script>
+</body>
+</html>
